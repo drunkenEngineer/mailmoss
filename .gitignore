@@ -16,3 +16,8 @@ npm-debug.log*
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Kept local: working notes and the internal spec
+CLAUDE.md
+docs/
+
