@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { I18nContext } from './context'
 import type { I18nValue } from './context'
+import { format } from './format'
 import { catalogues, resolveLocale } from './locale'
 import type { Locale } from './locale'
 import { browserLanguage, readStoredLocale, writeStoredLocale } from './preference'
@@ -36,7 +37,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     () => ({
       locale,
       setLocale,
-      t: (key) => catalogues[locale][key],
+      t: (key, params) => format(catalogues[locale][key], params),
     }),
     [locale, setLocale],
   )

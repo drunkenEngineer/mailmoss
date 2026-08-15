@@ -1,11 +1,14 @@
 import { createContext, useContext } from 'react'
+import type { MessageParams } from './format'
 import type { Locale } from './locale'
 import type { MessageKey } from './locales/en'
+
+export type Translate = (key: MessageKey, params?: MessageParams) => string
 
 export type I18nValue = {
   locale: Locale
   setLocale: (locale: Locale) => void
-  t: (key: MessageKey) => string
+  t: Translate
 }
 
 export const I18nContext = createContext<I18nValue | null>(null)
@@ -16,7 +19,7 @@ function useI18n(): I18nValue {
   return value
 }
 
-export function useT(): (key: MessageKey) => string {
+export function useT(): Translate {
   return useI18n().t
 }
 

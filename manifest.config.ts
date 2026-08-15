@@ -1,6 +1,5 @@
 import { defineManifest } from '@crxjs/vite-plugin'
-
-export const DEFAULT_SCOPES = ['https://www.googleapis.com/auth/gmail.metadata']
+import { DEFAULT_SCOPES } from './src/auth/scopes.ts'
 
 // client_id and key come from .env — see .env.example. Without a fixed key the
 // extension ID changes on every reload, which breaks the OAuth client binding.
