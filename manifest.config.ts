@@ -10,10 +10,10 @@ export function buildManifest(env: Record<string, string>) {
 
   return defineManifest({
     manifest_version: 3,
-    name: 'QuietInbox',
+    name: '__MSG_extName__',
     version: '0.0.1',
-    description:
-      'See which senders you never read, and unsubscribe in one click. Nothing leaves your browser.',
+    description: '__MSG_extDescription__',
+    default_locale: 'en',
 
     ...(key ? { key } : {}),
     ...(clientId ? { oauth2: { client_id: clientId, scopes: DEFAULT_SCOPES } } : {}),
@@ -30,7 +30,7 @@ export function buildManifest(env: Record<string, string>) {
       default_path: 'src/sidepanel/index.html',
     },
     action: {
-      default_title: 'QuietInbox',
+      default_title: '__MSG_extName__',
     },
   })
 }

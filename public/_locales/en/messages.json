@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "QuietInbox",
+    "description": "Extension name shown in Chrome and on the Web Store."
+  },
+  "extDescription": {
+    "message": "See which senders you never read, and unsubscribe in one click. Nothing leaves your browser.",
+    "description": "Extension description shown in Chrome and on the Web Store."
+  }
+}
