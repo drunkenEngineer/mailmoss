@@ -1,5 +1,5 @@
 export const en = {
-  appName: 'QuietInbox',
+  appName: 'Mailmoss',
   tagline: 'Senders you never read',
   notConnected: 'Not connected yet.',
   languageLabel: 'Language',

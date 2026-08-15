@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Report privately through GitHub's [security advisory](https://github.com/drunkenEngineer/quietinbox/security/advisories/new)
+Report privately through GitHub's [security advisory](https://github.com/drunkenEngineer/mailmoss/security/advisories/new)
 form rather than opening a public issue. Expect a first reply within a few days.
 
 Findings that matter most here:

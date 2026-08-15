@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest something QuietInbox should do
+about: Suggest something Mailmoss should do
 labels: enhancement
 ---
 

@@ -1,4 +1,4 @@
-# QuietInbox
+# Mailmoss
 
 A Chrome extension that shows which Gmail senders you never read, and lets you unsubscribe from
 them in bulk. Available in English and French.
