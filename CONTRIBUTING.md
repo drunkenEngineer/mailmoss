@@ -92,3 +92,7 @@ Strings that Chrome itself displays, meaning the extension name and description 
 listing, live in `public/_locales/<locale>/messages.json` and are referenced from the manifest
 as `__MSG_key__`. That mechanism is separate from the in-app layer because Chrome resolves it
 before the extension runs.
+
+The one exception is `src/sidepanel/diagnostics/`. Those panels are development instrumentation
+that gets deleted before release, so translating them would be wasted effort. Nothing outside
+that folder may hardcode a user-visible string.
