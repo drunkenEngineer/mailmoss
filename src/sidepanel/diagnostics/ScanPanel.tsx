@@ -160,7 +160,10 @@ function LoadedScanPanel({ token, store }: { token: string; store: Store }) {
 
       {(running || processed > 0) && (
         <Mono>
-          {processed} messages · {senders.length} senders · {rate}/s{label !== '' && ` · ${label}`}
+          {processed} messages · {senders.length} senders
+          {/* Restored counts carry no timing, so a rate would read as 0/s. */}
+          {elapsed > 0 && ` · ${rate}/s`}
+          {label !== '' && ` · ${label}`}
         </Mono>
       )}
 
