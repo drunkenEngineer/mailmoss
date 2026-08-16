@@ -78,6 +78,37 @@ export const fr: Messages = {
     "Retire l'autorisation d'accès et supprime tout ce qui est stocké dans ce navigateur.",
   settingsStorage: 'Stocké localement : {size}',
 
+  confirmTitle: 'Se désabonner de {count} expéditeurs',
+  confirmIntro:
+    "Toutes les adresses ci-dessous seront désabonnées. Les expéditeurs compatibles en un clic sont traités immédiatement ; les autres s'ouvrent dans un onglet à finir vous-même.",
+  confirmMethodSummary: '{oneClick} en un clic · {manual} via un onglet',
+  confirmCancel: 'Retour',
+  confirmGo: 'Se désabonner',
+
+  hostAccessTitle: 'Une permission supplémentaire',
+  hostAccessExplain:
+    "Envoyer la requête en un clic nécessite l'autorisation de joindre les serveurs des expéditeurs. Mailmoss la demande maintenant plutôt qu'à l'installation, et ne s'en sert qu'au moment du désabonnement. Refuser fonctionne aussi : ces expéditeurs s'ouvriront simplement dans un onglet.",
+
+  runProgress: 'Désabonnement {index} sur {total}',
+  runCancel: 'Arrêter',
+
+  reportTitle: 'Terminé',
+  reportDone: '{count} désabonnés',
+  reportManual: '{count} ouverts dans un onglet à finir',
+  reportFailed: '{count} en échec',
+  reportCancelled: "Arrêté en cours. Les expéditeurs non traités n'ont pas été touchés.",
+  reportRetry: 'Réessayer les échecs',
+  reportClose: 'Fermer',
+
+  statusDone: 'Désabonné',
+  statusManual: 'À confirmer',
+  statusFailed: 'Échec',
+
+  themeLabel: 'Thème',
+  themeSystem: 'Suivre le navigateur',
+  themeLight: 'Clair',
+  themeDark: 'Sombre',
+
   errorTitle: "Quelque chose s'est mal passé",
   errorAuth: 'La connexion a expiré. Reconnectez-vous pour continuer.',
   errorNetwork: 'Gmail est injoignable. Vérifiez votre connexion.',

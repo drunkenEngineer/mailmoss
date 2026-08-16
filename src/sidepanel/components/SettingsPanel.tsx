@@ -1,4 +1,35 @@
 import { useT } from '@/i18n'
+import { LanguagePicker } from './LanguagePicker'
+import { ThemePicker } from './ThemePicker'
+
+function Toggle({
+  checked,
+  onChange,
+  label,
+  note,
+}: {
+  checked: boolean
+  onChange: (value: boolean) => void
+  label: string
+  note?: string
+}) {
+  return (
+    <label className="flex items-start gap-2 text-xs">
+      <input
+        type="checkbox"
+        className="mt-0.5 shrink-0"
+        checked={checked}
+        onChange={(event) => {
+          onChange(event.target.checked)
+        }}
+      />
+      <span>
+        {label}
+        {note !== undefined && <span className="block text-[11px] text-subtle">{note}</span>}
+      </span>
+    </label>
+  )
+}
 
 export function SettingsPanel({
   scopes,
@@ -24,56 +55,35 @@ export function SettingsPanel({
   const t = useT()
 
   return (
-    <div className="space-y-3 border-b border-slate-200 bg-slate-50 px-4 py-3">
-      <p className="text-[11px] text-slate-500">{t('settingsScope', { scopes })}</p>
-      <p className="text-[11px] text-slate-500">{t('settingsStorage', { size: storageLabel })}</p>
+    <div className="space-y-3 border-b border-line bg-sunken px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <ThemePicker />
+        <LanguagePicker />
+      </div>
 
-      <label className="flex items-start gap-2 text-xs">
-        <input
-          type="checkbox"
-          className="mt-0.5"
-          checked={allTime}
-          onChange={(event) => {
-            onAllTime(event.target.checked)
-          }}
-        />
-        <span>
-          {t('settingsFullScan')}
-          <span className="block text-[11px] text-slate-500">{t('settingsFullScanNote')}</span>
-        </span>
-      </label>
+      <Toggle
+        checked={allTime}
+        onChange={onAllTime}
+        label={t('settingsFullScan')}
+        note={t('settingsFullScanNote')}
+      />
+      <Toggle checked={showHandled} onChange={onShowHandled} label={t('settingsShowHandled')} />
+      <Toggle checked={diagnostics} onChange={onDiagnostics} label={t('settingsDiagnostics')} />
 
-      <label className="flex items-center gap-2 text-xs">
-        <input
-          type="checkbox"
-          checked={showHandled}
-          onChange={(event) => {
-            onShowHandled(event.target.checked)
-          }}
-        />
-        {t('settingsShowHandled')}
-      </label>
+      <div className="space-y-1 border-t border-line pt-3 text-[11px] text-subtle">
+        <p>{t('settingsScope', { scopes })}</p>
+        <p>{t('settingsStorage', { size: storageLabel })}</p>
+      </div>
 
-      <label className="flex items-center gap-2 text-xs">
-        <input
-          type="checkbox"
-          checked={diagnostics}
-          onChange={(event) => {
-            onDiagnostics(event.target.checked)
-          }}
-        />
-        {t('settingsDiagnostics')}
-      </label>
-
-      <div>
+      <div className="border-t border-line pt-3">
         <button
           type="button"
-          className="rounded border border-red-300 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
+          className="rounded-md border border-danger px-2.5 py-1.5 text-xs font-medium text-danger hover:bg-danger-soft"
           onClick={onWipe}
         >
           {t('settingsWipe')}
         </button>
-        <p className="mt-1 text-[11px] text-slate-500">{t('settingsWipeNote')}</p>
+        <p className="mt-1 text-[11px] text-subtle">{t('settingsWipeNote')}</p>
       </div>
     </div>
   )

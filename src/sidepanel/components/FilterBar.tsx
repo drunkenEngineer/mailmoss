@@ -36,40 +36,20 @@ export function FilterBar({
   const t = useT()
 
   return (
-    <div className="space-y-2 border-b border-slate-200 px-4 py-2">
-      <input
-        type="search"
-        className="w-full rounded border border-slate-200 px-2 py-1 text-xs"
-        placeholder={t('searchPlaceholder')}
-        value={query}
-        onChange={(event) => {
-          onQuery(event.target.value)
-        }}
-      />
-
-      <div className="flex flex-wrap gap-1">
-        {FILTERS.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className={`rounded-full px-2 py-0.5 text-[11px] ${
-              filter === option
-                ? 'bg-slate-900 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-            onClick={() => {
-              onFilter(option)
-            }}
-          >
-            {t(FILTER_LABELS[option])} {counts[option]}
-          </button>
-        ))}
-      </div>
-
-      <label className="flex items-center gap-1 text-[11px] text-slate-500">
-        {t('sortLabel')}
+    <div className="space-y-2 border-b border-line px-4 py-3">
+      <div className="flex gap-2">
+        <input
+          type="search"
+          className="min-w-0 flex-1 rounded-md border border-line bg-raised px-2.5 py-1.5 text-xs text-ink placeholder:text-subtle"
+          placeholder={t('searchPlaceholder')}
+          value={query}
+          onChange={(event) => {
+            onQuery(event.target.value)
+          }}
+        />
         <select
-          className="rounded border border-slate-200 px-1 py-0.5 text-[11px]"
+          className="shrink-0 rounded-md border border-line bg-raised px-1.5 py-1.5 text-[11px] text-ink"
+          aria-label={t('sortLabel')}
           value={sort}
           onChange={(event) => {
             onSort(event.target.value as SortKey)
@@ -81,7 +61,28 @@ export function FilterBar({
             </option>
           ))}
         </select>
-      </label>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5">
+        {FILTERS.map((option) => (
+          <button
+            key={option}
+            type="button"
+            aria-pressed={filter === option}
+            className={`rounded-full px-2.5 py-1 text-[11px] transition-colors ${
+              filter === option
+                ? 'bg-accent text-accent-ink'
+                : 'bg-sunken text-muted hover:bg-hovered'
+            }`}
+            onClick={() => {
+              onFilter(option)
+            }}
+          >
+            {t(FILTER_LABELS[option])}
+            <span className="ml-1 tabular-nums opacity-70">{counts[option]}</span>
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

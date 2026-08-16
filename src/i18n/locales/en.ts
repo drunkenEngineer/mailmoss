@@ -74,6 +74,37 @@ export const en = {
   settingsWipeNote: 'Removes the access grant and deletes everything stored in this browser.',
   settingsStorage: 'Stored locally: {size}',
 
+  confirmTitle: 'Unsubscribe from {count} senders',
+  confirmIntro:
+    'Every address below will be unsubscribed. Senders that support one click are done straight away; the rest open in a tab for you to finish.',
+  confirmMethodSummary: '{oneClick} in one click · {manual} need a tab',
+  confirmCancel: 'Back',
+  confirmGo: 'Unsubscribe',
+
+  hostAccessTitle: 'One extra permission',
+  hostAccessExplain:
+    'Sending the one-click request needs permission to reach the senders’ own servers. Mailmoss asks for it now rather than at install, and only uses it when you unsubscribe. Refusing still works: those senders open in a tab instead.',
+
+  runProgress: 'Unsubscribing {index} of {total}',
+  runCancel: 'Stop',
+
+  reportTitle: 'Done',
+  reportDone: '{count} unsubscribed',
+  reportManual: '{count} opened in a tab for you to finish',
+  reportFailed: '{count} failed',
+  reportCancelled: 'Stopped early. Senders not reached were left alone.',
+  reportRetry: 'Retry the failures',
+  reportClose: 'Close',
+
+  statusDone: 'Unsubscribed',
+  statusManual: 'Needs your confirmation',
+  statusFailed: 'Failed',
+
+  themeLabel: 'Theme',
+  themeSystem: 'Match browser',
+  themeLight: 'Light',
+  themeDark: 'Dark',
+
   errorTitle: 'Something went wrong',
   errorAuth: 'The connection expired. Connect again to carry on.',
   errorNetwork: 'Could not reach Gmail. Check your connection.',

@@ -13,9 +13,9 @@ export function ProbeCard({
   children: ReactNode
 }) {
   return (
-    <section className="border-t border-slate-200 px-4 py-3">
-      <h2 className="text-xs font-semibold tracking-wide text-slate-700 uppercase">{title}</h2>
-      <p className="mt-1 text-xs text-slate-500">{summary}</p>
+    <section className="border-t border-line px-4 py-3">
+      <h2 className="text-xs font-semibold tracking-wide text-muted uppercase">{title}</h2>
+      <p className="mt-1 text-xs text-subtle">{summary}</p>
       <div className="mt-2">{children}</div>
     </section>
   )
@@ -34,8 +34,8 @@ export function ProbeButton({
 }) {
   const palette =
     tone === 'danger'
-      ? 'border-red-300 text-red-700 hover:bg-red-50'
-      : 'border-slate-300 hover:bg-slate-50'
+      ? 'border-danger text-danger hover:bg-danger-soft'
+      : 'border-line-strong hover:bg-hovered'
 
   return (
     <button
@@ -50,5 +50,5 @@ export function ProbeButton({
 }
 
 export function Mono({ children }: { children: ReactNode }) {
-  return <p className="mt-1 font-mono text-[11px] break-words text-slate-500">{children}</p>
+  return <p className="mt-1 font-mono text-[11px] break-words text-subtle">{children}</p>
 }

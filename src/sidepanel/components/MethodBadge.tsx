@@ -3,10 +3,10 @@ import { useT } from '@/i18n'
 import type { MessageKey } from '@/i18n'
 
 const STYLES: Record<UnsubscribeMethod, { key: MessageKey; className: string }> = {
-  'one-click': { key: 'methodOneClick', className: 'bg-emerald-50 text-emerald-700' },
-  http: { key: 'methodLink', className: 'bg-sky-50 text-sky-700' },
-  mailto: { key: 'methodEmail', className: 'bg-slate-100 text-slate-600' },
-  none: { key: 'methodNone', className: 'bg-slate-50 text-slate-400' },
+  'one-click': { key: 'methodOneClick', className: 'bg-ok-soft text-ok' },
+  http: { key: 'methodLink', className: 'bg-info-soft text-info' },
+  mailto: { key: 'methodEmail', className: 'bg-sunken text-muted' },
+  none: { key: 'methodNone', className: 'bg-sunken text-subtle' },
 }
 
 export function MethodBadge({ method }: { method: UnsubscribeMethod }) {

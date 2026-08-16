@@ -5,10 +5,12 @@ export const LARGE_SELECTION = 50
 
 export function SelectionBar({
   count,
+  onUnsubscribe,
   onIgnore,
   onClear,
 }: {
   count: number
+  onUnsubscribe: () => void
   onIgnore: () => void
   onClear: () => void
 }) {
@@ -16,36 +18,28 @@ export function SelectionBar({
   if (count === 0) return null
 
   return (
-    <div className="border-t border-slate-200 bg-white px-4 py-2">
-      {count >= LARGE_SELECTION && (
-        <p className="mb-2 rounded bg-amber-50 px-2 py-1 text-[11px] text-amber-800">
-          {t('selectionLarge', { count })}
-        </p>
-      )}
-
+    <div className="border-t border-line bg-raised px-4 py-2.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-medium">{t('selectionCount', { count })}</span>
+        <button
+          type="button"
+          className="text-xs text-muted underline-offset-2 hover:underline"
+          onClick={onClear}
+        >
+          {t('selectionCount', { count })}
+        </button>
 
         <span className="flex gap-2">
           <button
             type="button"
-            className="rounded border border-slate-300 px-2 py-1 text-xs hover:bg-slate-50"
-            onClick={onClear}
-          >
-            {t('selectionClear')}
-          </button>
-          <button
-            type="button"
-            className="rounded border border-slate-300 px-2 py-1 text-xs hover:bg-slate-50"
+            className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs hover:bg-hovered"
             onClick={onIgnore}
           >
             {t('selectionIgnore')}
           </button>
           <button
             type="button"
-            className="rounded bg-slate-900 px-2 py-1 text-xs font-medium text-white disabled:opacity-40"
-            disabled
-            title={t('unsubscribeNotReady')}
+            className="rounded-md bg-accent px-2.5 py-1.5 text-xs font-medium text-accent-ink hover:bg-accent-hover"
+            onClick={onUnsubscribe}
           >
             {t('selectionUnsubscribe')}
           </button>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { LanguagePicker } from './components/LanguagePicker'
+import { ThemePicker } from './components/ThemePicker'
 import { useGmailAuth } from './hooks/useGmailAuth'
 import { useScanStore } from './hooks/useScanStore'
 import { ConnectView } from './views/ConnectView'
@@ -15,23 +16,27 @@ export function App() {
   const { state, connect, disconnect, reset } = useGmailAuth()
   const [showSettings, setShowSettings] = useState(false)
 
+  const connected = state.status === 'connected'
+
   return (
-    <div className="flex h-full flex-col bg-white text-slate-900">
-      <header className="flex items-start justify-between gap-2 border-b border-slate-200 px-4 py-3">
+    <div className="flex h-full flex-col bg-surface text-ink">
+      <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
         <div className="min-w-0">
-          <h1 className="text-sm font-semibold">{t('appName')}</h1>
-          <p className="truncate text-xs text-slate-500">
-            {state.status === 'connected'
-              ? t('signedInAs', { email: state.profile.emailAddress })
-              : t('tagline')}
+          <h1 className="text-sm font-semibold tracking-tight">{t('appName')}</h1>
+          <p className="truncate text-[11px] text-subtle">
+            {connected ? state.profile.emailAddress : t('tagline')}
           </p>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          {state.status === 'connected' && (
+          {connected ? (
             <button
               type="button"
-              className="rounded border border-slate-200 px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-50"
+              className={`rounded-md border px-2 py-1 text-xs transition-colors ${
+                showSettings
+                  ? 'border-accent bg-accent text-accent-ink'
+                  : 'border-line text-muted hover:bg-hovered'
+              }`}
               aria-expanded={showSettings}
               onClick={() => {
                 setShowSettings((previous) => !previous)
@@ -39,12 +44,18 @@ export function App() {
             >
               {t('settings')}
             </button>
+          ) : (
+            // Both pickers live in settings once connected, but someone should
+            // not have to sign in before they can read the panel comfortably.
+            <>
+              <ThemePicker />
+              <LanguagePicker />
+            </>
           )}
-          <LanguagePicker />
         </div>
       </header>
 
-      {state.status === 'connected' ? (
+      {connected ? (
         <ConnectedPanel
           email={state.profile.emailAddress}
           token={state.token}
@@ -53,12 +64,12 @@ export function App() {
           onRevoke={() => void disconnect(state.token)}
         />
       ) : state.status === 'error' ? (
-        <main className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
-          <p className="text-sm font-medium text-red-600">{t('errorTitle')}</p>
-          <p className="font-mono text-[11px] break-words text-slate-500">{state.message}</p>
+        <main className="flex flex-1 flex-col items-center justify-center gap-3 px-7 text-center">
+          <p className="text-sm font-medium text-danger">{t('errorTitle')}</p>
+          <p className="font-mono text-[11px] break-words text-subtle">{state.message}</p>
           <button
             type="button"
-            className="rounded border border-slate-300 px-3 py-1.5 text-xs font-medium hover:bg-slate-50"
+            className="rounded-md border border-line-strong px-3 py-1.5 text-xs font-medium hover:bg-hovered"
             onClick={reset}
           >
             {t('retry')}

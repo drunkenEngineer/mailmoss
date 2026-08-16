@@ -1,5 +1,98 @@
 @import 'tailwindcss';
 
+/* The panel sets data-theme itself so a manual choice can override the browser. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f8fafc;
+  --surface-hover: #f1f5f9;
+
+  --ink: #0f172a;
+  --ink-muted: #475569;
+  --ink-subtle: #94a3b8;
+
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+
+  --accent: #0f172a;
+  --accent-hover: #334155;
+  --accent-ink: #ffffff;
+
+  --ok: #047857;
+  --ok-soft: #ecfdf5;
+  --warn: #b45309;
+  --warn-soft: #fffbeb;
+  --danger: #b91c1c;
+  --danger-soft: #fef2f2;
+  --info: #0369a1;
+  --info-soft: #f0f9ff;
+
+  --meter-track: #e2e8f0;
+  --meter-fill: #64748b;
+}
+
+[data-theme='dark'] {
+  --surface: #0b1220;
+  --surface-raised: #111a2b;
+  --surface-sunken: #0e1626;
+  --surface-hover: #172236;
+
+  --ink: #e6edf7;
+  --ink-muted: #9fb0c6;
+  --ink-subtle: #6b7f99;
+
+  --line: #1e2b40;
+  --line-strong: #2b3a52;
+
+  --accent: #e6edf7;
+  --accent-hover: #c7d5e8;
+  --accent-ink: #0b1220;
+
+  --ok: #4ade80;
+  --ok-soft: #08301f;
+  --warn: #fbbf24;
+  --warn-soft: #33260a;
+  --danger: #f87171;
+  --danger-soft: #3a1216;
+  --info: #56c1f5;
+  --info-soft: #0a2436;
+
+  --meter-track: #1e2b40;
+  --meter-fill: #7d90aa;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-raised: var(--surface-raised);
+  --color-sunken: var(--surface-sunken);
+  --color-hovered: var(--surface-hover);
+
+  --color-ink: var(--ink);
+  --color-muted: var(--ink-muted);
+  --color-subtle: var(--ink-subtle);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --color-meter-track: var(--meter-track);
+  --color-meter-fill: var(--meter-fill);
+}
+
 html,
 body,
 #root {
@@ -8,10 +101,17 @@ body,
 
 body {
   margin: 0;
+  background: var(--surface);
+  color: var(--ink);
   font-family:
     ui-sans-serif,
     system-ui,
     -apple-system,
     'Segoe UI',
     sans-serif;
+}
+
+/* Scrollbars follow the theme instead of staying stubbornly light. */
+* {
+  scrollbar-color: var(--line-strong) transparent;
 }

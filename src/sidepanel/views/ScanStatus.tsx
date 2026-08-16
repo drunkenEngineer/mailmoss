@@ -38,21 +38,21 @@ export function ScanStatus({
   const scanning = phase === 'scanning'
 
   return (
-    <div className="border-b border-slate-200 px-4 py-2">
-      <div className="flex items-center justify-between gap-2">
+    <div className="border-b border-line px-4 py-3">
+      <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           {scanning ? (
             <>
-              <p className="truncate text-xs font-medium">
+              <p className="truncate text-xs font-medium tabular-nums">
                 {t('scanProgress', { processed, senders })}
               </p>
-              <p className="truncate text-[11px] text-slate-500">
+              <p className="truncate text-[11px] text-subtle">
                 {t('scanRate', { rate: rate.toFixed(0) })}
                 {label !== '' && ` · ${t('scanCategory', { label })}`}
               </p>
             </>
           ) : (
-            <p className="truncate text-xs text-slate-600">
+            <p className={`truncate text-xs ${phase === 'error' ? 'text-danger' : 'text-muted'}`}>
               {phase === 'done' && t('scanFinished', { processed, senders })}
               {phase === 'cancelled' && t('scanCancelled')}
               {phase === 'error' && failure && t(FAILURE_MESSAGES[failure])}
@@ -64,7 +64,7 @@ export function ScanStatus({
           {scanning ? (
             <button
               type="button"
-              className="rounded border border-slate-300 px-2 py-1 text-xs hover:bg-slate-50"
+              className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs hover:bg-hovered"
               onClick={onCancel}
             >
               {t('scanCancel')}
@@ -74,7 +74,7 @@ export function ScanStatus({
               {canResume && (
                 <button
                   type="button"
-                  className="rounded border border-slate-300 px-2 py-1 text-xs hover:bg-slate-50"
+                  className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs hover:bg-hovered"
                   onClick={onResume}
                 >
                   {t('scanResume')}
@@ -82,7 +82,7 @@ export function ScanStatus({
               )}
               <button
                 type="button"
-                className="rounded bg-slate-900 px-2 py-1 text-xs font-medium text-white hover:bg-slate-700"
+                className="rounded-md bg-accent px-2.5 py-1.5 text-xs font-medium text-accent-ink hover:bg-accent-hover"
                 onClick={onStart}
               >
                 {processed > 0 ? t('scanAgain') : t('scanStart')}
@@ -92,8 +92,16 @@ export function ScanStatus({
         </div>
       </div>
 
+      {scanning && (
+        // No total is knowable up front, so this reads as motion rather than
+        // a percentage it would have to invent.
+        <div className="mt-2.5 h-1 overflow-hidden rounded-full bg-meter-track">
+          <div className="h-full w-1/3 animate-pulse rounded-full bg-meter-fill" />
+        </div>
+      )}
+
       {outOfOrder && (
-        <p className="mt-2 rounded bg-amber-50 px-2 py-1 text-[11px] text-amber-800">
+        <p className="mt-2.5 rounded-md bg-warn-soft px-2.5 py-1.5 text-[11px] text-warn">
           {t('scanOrderWarning')}
         </p>
       )}

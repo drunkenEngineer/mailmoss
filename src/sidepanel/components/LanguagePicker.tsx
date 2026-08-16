@@ -5,10 +5,10 @@ export function LanguagePicker() {
   const t = useT()
 
   return (
-    <label className="flex items-center gap-1 text-xs text-slate-500">
+    <label className="flex items-center gap-2 text-xs">
       <span className="sr-only">{t('languageLabel')}</span>
       <select
-        className="rounded border border-slate-200 bg-white px-1 py-0.5 text-xs"
+        className="rounded border border-line bg-raised px-1.5 py-1 text-xs text-ink"
         value={locale}
         onChange={(event) => {
           if (isLocale(event.target.value)) setLocale(event.target.value)

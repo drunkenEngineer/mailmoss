@@ -40,15 +40,23 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
 
   const abortRef = useRef<AbortController | null>(null)
 
+  // `processed` is passed rather than read off the checkpoint, because the
+  // checkpoint is cleared precisely when a scan finishes. Deriving it there
+  // saved a completed scan as having examined nothing.
   const persist = useCallback(
-    async (rows: SenderAggregate[], live: ScanCheckpoint | undefined, startedAt: number) => {
+    async (options: {
+      rows: SenderAggregate[]
+      checkpoint: ScanCheckpoint | undefined
+      startedAt: number
+      processed: number
+    }) => {
       await save({
         schemaVersion: SCHEMA_VERSION,
         accountHash,
-        startedAt,
-        processed: live?.processed ?? 0,
-        senders: rows,
-        ...(live ? { checkpoint: live } : { completedAt: Date.now() }),
+        startedAt: options.startedAt,
+        processed: options.processed,
+        senders: options.rows,
+        ...(options.checkpoint ? { checkpoint: options.checkpoint } : { completedAt: Date.now() }),
       })
     },
     [accountHash, save],
@@ -72,6 +80,7 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
 
       const startedAt = Date.now()
       let batches = 0
+      let examined = options.resume ? (checkpoint?.processed ?? 0) : 0
 
       try {
         for await (const event of runScan(
@@ -85,24 +94,33 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
           if (event.type === 'batch') {
             aggregate(event.messages, rows)
             live = event.checkpoint
+            examined = event.checkpoint.processed
             batches += 1
 
             const snapshot = [...rows.values()]
             setSenders(snapshot)
             setCheckpoint(event.checkpoint)
-            setProcessed(event.checkpoint.processed)
+            setProcessed(examined)
             setLabel(event.label)
-            setRate((event.checkpoint.processed / Math.max(1, Date.now() - startedAt)) * 1000)
+            setRate((examined / Math.max(1, Date.now() - startedAt)) * 1000)
 
-            if (batches % SAVE_EVERY === 0) await persist(snapshot, live, startedAt)
+            if (batches % SAVE_EVERY === 0) {
+              await persist({ rows: snapshot, checkpoint: live, startedAt, processed: examined })
+            }
           } else if (event.type === 'warning') {
             setOutOfOrder(true)
           } else if (event.type === 'done') {
             live = undefined
+            examined = event.processed
             setCheckpoint(undefined)
-            setProcessed(event.processed)
+            setProcessed(examined)
             setPhase('done')
-            await persist([...rows.values()], undefined, startedAt)
+            await persist({
+              rows: [...rows.values()],
+              checkpoint: undefined,
+              startedAt,
+              processed: examined,
+            })
           }
         }
       } catch (error) {
@@ -112,7 +130,12 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
 
         if (aborted) {
           setPhase('cancelled')
-          await persist([...rows.values()], live, startedAt)
+          await persist({
+            rows: [...rows.values()],
+            checkpoint: live,
+            startedAt,
+            processed: examined,
+          })
         } else {
           setFailure(failureOf(error))
           setPhase('error')
@@ -139,9 +162,10 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
         wanted.has(sender.key) ? { ...sender, status } : sender,
       )
       setSenders(next)
-      await persist(next, checkpoint, Date.now())
+      // Marking senders handled must not rewrite what the scan found.
+      await persist({ rows: next, checkpoint, startedAt: Date.now(), processed })
     },
-    [checkpoint, persist, senders],
+    [checkpoint, persist, processed, senders],
   )
 
   const reset = useCallback(async () => {
