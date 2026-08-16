@@ -16,13 +16,6 @@ export const fr: Messages = {
   messagesTotal: '{count} messages dans ce compte',
   grantedScopes: 'Accordé : {scopes}',
 
-  probeTitle: 'Sonde de permissions',
-  probeIntro:
-    "Vérifie ce que l'accès aux en-têtes seuls autorise réellement. Le résultat détermine le fonctionnement de l'analyse.",
-  probeRun: 'Lancer la sonde',
-  probeRunning: 'En cours…',
-  probeVerdict: 'Verdict',
-
   errorTitle: "Quelque chose s'est mal passé",
   retry: 'Réessayer',
 }

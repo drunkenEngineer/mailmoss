@@ -2,45 +2,35 @@ import { useState } from 'react'
 import { createGmailFetch } from '@/core/gmail/client'
 import { probeMetadataScope } from '@/core/gmail/scopeProbe'
 import type { ProbeReport } from '@/core/gmail/scopeProbe'
-import { useT } from '@/i18n'
+import { Mono, ProbeButton, ProbeCard } from './ProbeCard'
 
-type Status = 'idle' | 'running' | 'done' | 'failed'
-
-export function ScopeProbe({ token }: { token: string }) {
-  const t = useT()
-  const [status, setStatus] = useState<Status>('idle')
+export function ScopeProbePanel({ token }: { token: string }) {
+  const [running, setRunning] = useState(false)
   const [report, setReport] = useState<ProbeReport | null>(null)
   const [error, setError] = useState('')
 
   async function run() {
-    setStatus('running')
+    setRunning(true)
     setError('')
     try {
       setReport(await probeMetadataScope(createGmailFetch(token)))
-      setStatus('done')
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Unexpected failure')
-      setStatus('failed')
+    } finally {
+      setRunning(false)
     }
   }
 
   return (
-    <section className="border-t border-slate-200 px-4 py-3">
-      <h2 className="text-xs font-semibold tracking-wide text-slate-700 uppercase">
-        {t('probeTitle')}
-      </h2>
-      <p className="mt-1 text-xs text-slate-500">{t('probeIntro')}</p>
+    <ProbeCard
+      title="S-1 · Scope"
+      summary="What the header-only scope allows. Settled: labels work, search queries do not."
+    >
+      <ProbeButton disabled={running} onClick={() => void run()}>
+        {running ? 'Running…' : 'Re-run probe'}
+      </ProbeButton>
 
-      <button
-        type="button"
-        className="mt-2 rounded border border-slate-300 px-2 py-1 text-xs font-medium hover:bg-slate-50 disabled:opacity-50"
-        disabled={status === 'running'}
-        onClick={() => void run()}
-      >
-        {status === 'running' ? t('probeRunning') : t('probeRun')}
-      </button>
-
-      {status === 'failed' && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      {error !== '' && <p className="mt-2 text-xs text-red-600">{error}</p>}
 
       {report && (
         <div className="mt-3 space-y-2">
@@ -52,20 +42,15 @@ export function ScopeProbe({ token }: { token: string }) {
                 </span>
                 <span>{outcome.question}</span>
               </p>
-              <p className="mt-1 font-mono text-[11px] break-words text-slate-500">
-                {outcome.detail}
-              </p>
+              <Mono>{outcome.detail}</Mono>
             </div>
           ))}
-
           <div className="rounded bg-slate-50 p-2">
-            <p className="text-xs font-semibold">
-              {t('probeVerdict')}: {report.strategy}
-            </p>
+            <p className="text-xs font-semibold">Verdict: {report.strategy}</p>
             <p className="mt-1 text-xs text-slate-600">{report.verdict}</p>
           </div>
         </div>
       )}
-    </section>
+    </ProbeCard>
   )
 }

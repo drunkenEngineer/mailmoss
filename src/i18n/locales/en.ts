@@ -14,13 +14,6 @@ export const en = {
   messagesTotal: '{count} messages in this account',
   grantedScopes: 'Granted: {scopes}',
 
-  probeTitle: 'Scope probe',
-  probeIntro:
-    'Checks what the header-only scope actually allows. The result decides how scanning works.',
-  probeRun: 'Run probe',
-  probeRunning: 'Running…',
-  probeVerdict: 'Verdict',
-
   errorTitle: 'Something went wrong',
   retry: 'Try again',
 } as const

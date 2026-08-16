@@ -1,5 +1,5 @@
 import { LanguagePicker } from './components/LanguagePicker'
-import { ScopeProbe } from './components/ScopeProbe'
+import { Diagnostics } from './diagnostics/Diagnostics'
 import { useGmailAuth } from './hooks/useGmailAuth'
 import { useT } from '@/i18n'
 
@@ -40,7 +40,7 @@ export function App() {
             </button>
           </section>
 
-          <ScopeProbe token={state.token} />
+          <Diagnostics token={state.token} />
         </div>
       ) : (
         <main className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
