@@ -124,7 +124,7 @@ export function decide(outcomes: ProbeOutcome[]): { strategy: ScanStrategy; verd
     return {
       strategy: 'labels',
       verdict:
-        'Acceptable. Keep gmail.metadata as the default scope, scan by label, and filter the date window client-side on internalDate.',
+        'Acceptable. Keep gmail.metadata as the default scope and scan by label, one pass per category. The date window becomes an early stop on internalDate rather than a filter, since a message date is unknown until it has already been fetched.',
     }
   }
 

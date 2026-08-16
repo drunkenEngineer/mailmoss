@@ -33,7 +33,9 @@ export type ScanEvent =
 const REQUIRED: Required<Omit<ScanOptions, 'signal'>> = {
   labels: SCAN_LABELS,
   windowDays: 365,
-  concurrency: 10,
+  // Measured (spike S-2): throughput scales linearly to 20 with no throttling,
+  // and 40 loses a fifth of its requests to 429s. See docs/architecture.md.
+  concurrency: 20,
   batchSize: 100,
   maxMessages: 25_000,
   now: Date.now,
