@@ -8,12 +8,18 @@ export type MigrationResult =
 
 type RawDocument = Record<string, unknown>
 
-/**
- * Keyed by the version being migrated *from*. Empty at version 1; the machinery
- * exists now so that the first schema change is a normal edit rather than a
- * scramble to avoid stranding existing installs.
- */
-export const MIGRATIONS: Record<number, (document: RawDocument) => RawDocument> = {}
+/** Keyed by the version being migrated *from*. */
+export const MIGRATIONS: Record<number, (document: RawDocument) => RawDocument> = {
+  // 1 -> 2: senders gained a status, so an existing scan survives the upgrade
+  // instead of being thrown away and rerun.
+  1: (document) => ({
+    ...document,
+    senders: (document.senders as Record<string, unknown>[]).map((sender) => ({
+      ...sender,
+      status: sender.status ?? 'pending',
+    })),
+  }),
+}
 
 function looksLikeScan(value: RawDocument): boolean {
   return typeof value.accountHash === 'string' && Array.isArray(value.senders)

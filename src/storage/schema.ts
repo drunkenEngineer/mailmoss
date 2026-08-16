@@ -1,7 +1,7 @@
 import type { SenderAggregate } from '../core/aggregate/senders'
 import type { ScanCheckpoint } from '../core/scan/runner'
 
-export const SCHEMA_VERSION = 1
+export const SCHEMA_VERSION = 2
 
 /**
  * What is allowed to reach disk. Subjects, bodies and individual message

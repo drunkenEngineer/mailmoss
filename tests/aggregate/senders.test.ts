@@ -121,6 +121,7 @@ describe('unreadRate', () => {
         firstSeen: 0,
         lastSeen: 0,
         unsubscribe: { method: 'none' },
+        status: 'pending',
       }),
     ).toBe(0)
   })

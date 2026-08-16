@@ -4,6 +4,8 @@ import { parseFrom } from '../parse/address'
 import { resolveUnsubscribe } from '../parse/unsubscribe'
 import type { UnsubscribeTarget } from '../parse/unsubscribe'
 
+export type SenderStatus = 'pending' | 'unsubscribed' | 'ignored' | 'failed'
+
 export type SenderAggregate = {
   key: string
   displayName: string
@@ -15,6 +17,7 @@ export type SenderAggregate = {
   firstSeen: number
   lastSeen: number
   unsubscribe: UnsubscribeTarget
+  status: SenderStatus
 }
 
 function hasLabel(message: GmailMessageMetadata, label: string): boolean {
@@ -54,6 +57,7 @@ export function aggregate(
       firstSeen: seen,
       lastSeen: seen,
       unsubscribe: { method: 'none' },
+      status: 'pending',
     }
 
     row.totalCount += 1
