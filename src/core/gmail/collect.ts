@@ -12,6 +12,33 @@ export const SCAN_HEADERS = ['From', 'Date', 'List-Unsubscribe', 'List-Unsubscri
  * Passing all three at once would match only messages carrying all three,
  * which is essentially none. See docs/architecture.md, spike S-1.
  */
+export type MessagePage = {
+  refs: GmailMessageRef[]
+  nextPageToken?: string
+}
+
+export async function listMessagePage(
+  gmailFetch: GmailFetch,
+  options: { labelId: string; maxResults: number; pageToken?: string; signal?: AbortSignal },
+): Promise<MessagePage> {
+  const page = await withRetry(() =>
+    gmailFetch<GmailMessageList>({
+      path: '/users/me/messages',
+      params: {
+        labelIds: options.labelId,
+        maxResults: Math.min(500, options.maxResults),
+        pageToken: options.pageToken,
+      },
+      ...(options.signal ? { signal: options.signal } : {}),
+    }),
+  )
+
+  return {
+    refs: page.messages ?? [],
+    ...(page.nextPageToken === undefined ? {} : { nextPageToken: page.nextPageToken }),
+  }
+}
+
 export async function listMessageIds(
   gmailFetch: GmailFetch,
   options: { labelId: string; limit: number; signal?: AbortSignal },
@@ -20,19 +47,14 @@ export async function listMessageIds(
   let pageToken: string | undefined
 
   while (collected.length < options.limit) {
-    const page = await withRetry(() =>
-      gmailFetch<GmailMessageList>({
-        path: '/users/me/messages',
-        params: {
-          labelIds: options.labelId,
-          maxResults: Math.min(500, options.limit - collected.length),
-          pageToken,
-        },
-        ...(options.signal ? { signal: options.signal } : {}),
-      }),
-    )
+    const page = await listMessagePage(gmailFetch, {
+      labelId: options.labelId,
+      maxResults: options.limit - collected.length,
+      ...(pageToken === undefined ? {} : { pageToken }),
+      ...(options.signal ? { signal: options.signal } : {}),
+    })
 
-    collected.push(...(page.messages ?? []))
+    collected.push(...page.refs)
 
     pageToken = page.nextPageToken
     if (pageToken === undefined) break
