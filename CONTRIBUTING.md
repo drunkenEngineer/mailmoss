@@ -10,8 +10,11 @@ cp .env.example .env
 npm run build
 ```
 
-Load `dist/` at `chrome://extensions` with developer mode enabled. `npm run dev` gives you the
-same build with hot reload.
+Load `dist/` at `chrome://extensions` with developer mode enabled.
+
+`npm run dev` builds to `dist-dev/` instead, because a dev build only works while Vite is
+running and would otherwise replace the standalone one you had loaded. Point Chrome at
+`dist-dev/` when you want hot reload, and at `dist/` the rest of the time.
 
 Gmail access needs your own Google Cloud project and an OAuth client of type "Chrome Extension".
 Both values go in `.env`; neither is committed.
