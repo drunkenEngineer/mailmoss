@@ -1,10 +1,7 @@
-const STORAGE_KEY = 'locale'
+import { hasStorage } from '../storage/area'
+import { STORAGE_KEYS } from '../storage/keys'
 
-// The extension APIs are absent when the panel is served by the dev server, so
-// every access is guarded rather than assumed.
-function hasStorage(): boolean {
-  return typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined'
-}
+const STORAGE_KEY = STORAGE_KEYS.locale
 
 export function browserLanguage(): string | undefined {
   if (typeof chrome !== 'undefined' && typeof chrome.i18n !== 'undefined') {

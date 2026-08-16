@@ -40,7 +40,7 @@ export function App() {
             </button>
           </section>
 
-          <Diagnostics token={state.token} />
+          <Diagnostics token={state.token} email={state.profile.emailAddress} />
         </div>
       ) : (
         <main className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">

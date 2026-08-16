@@ -1,3 +1,5 @@
+import { chromeLocalArea } from '../storage/area'
+import { createScanStore } from '../storage/store'
 import { DEFAULT_SCOPES } from './scopes'
 
 const REVOKE_ENDPOINT = 'https://oauth2.googleapis.com/revoke'
@@ -37,4 +39,8 @@ export async function revokeToken(token: string): Promise<void> {
 
   await chrome.identity.removeCachedAuthToken({ token })
   await chrome.identity.clearAllCachedAuthTokens()
+
+  // Revoking access that leaves the analysis sitting on disk would be a
+  // half-measure, and this control is the one the audience checks first.
+  await createScanStore(chromeLocalArea()).wipeAll()
 }
