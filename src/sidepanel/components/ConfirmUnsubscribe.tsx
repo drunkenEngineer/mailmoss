@@ -39,9 +39,18 @@ export function ConfirmUnsubscribe({
   }
 
   return (
-    <div className="absolute inset-0 z-10 flex flex-col bg-surface">
+    // A dialog in the accessibility tree as well as visually: it covers the
+    // list rather than replacing it, so assistive tech needs telling.
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-title"
+      className="absolute inset-0 z-10 flex flex-col bg-surface"
+    >
       <header className="border-b border-line px-4 py-3">
-        <h2 className="text-sm font-semibold">{t('confirmTitle', { count: senders.length })}</h2>
+        <h2 id="confirm-title" className="text-sm font-semibold">
+          {t('confirmTitle', { count: senders.length })}
+        </h2>
         <p className="mt-1 text-xs text-muted">{t('confirmIntro')}</p>
         <p className="mt-1 text-[11px] text-subtle">
           {t('confirmMethodSummary', { oneClick, manual })}

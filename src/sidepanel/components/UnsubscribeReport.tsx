@@ -31,9 +31,16 @@ export function UnsubscribeReport({
   const failedKeys = results.filter((result) => result.status === 'failed').map((r) => r.key)
 
   return (
-    <div className="absolute inset-0 z-10 flex flex-col bg-surface">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="report-title"
+      className="absolute inset-0 z-10 flex flex-col bg-surface"
+    >
       <header className="border-b border-line px-4 py-3">
-        <h2 className="text-sm font-semibold">{t('reportTitle')}</h2>
+        <h2 id="report-title" className="text-sm font-semibold">
+          {t('reportTitle')}
+        </h2>
         <ul className="mt-1 space-y-0.5 text-xs">
           {summary.done > 0 && (
             <li className="text-ok">{t('reportDone', { count: summary.done })}</li>

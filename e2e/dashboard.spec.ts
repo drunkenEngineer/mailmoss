@@ -28,7 +28,10 @@ test('a scan finds every sender and ranks the most ignored first', async ({
   const page = await context.newPage()
   await connectAndScan(page, extensionId)
 
-  await expect(page.getByText(`${String(MOCK_SENDER_COUNT)} senders`)).toBeVisible()
+  // Exact, because the scan summary sentence also ends in "N senders".
+  await expect(
+    page.getByText(`${String(MOCK_SENDER_COUNT)} senders`, { exact: true }),
+  ).toBeVisible()
 
   // Five messages from one sender, one from each of the others, so it leads.
   const first = page.locator('label').first()
@@ -76,10 +79,13 @@ test('search narrows the list and clearing it restores', async ({ context, exten
   await connectAndScan(page, extensionId)
 
   await page.getByPlaceholder('Search sender or domain').fill('oneclick')
-  await expect(page.getByText('1 senders')).toBeVisible()
+  await expect(page.getByText('1 senders', { exact: true })).toBeVisible()
 
   await page.getByPlaceholder('Search sender or domain').fill('')
-  await expect(page.getByText(`${String(MOCK_SENDER_COUNT)} senders`)).toBeVisible()
+  // Exact, because the scan summary sentence also ends in "N senders".
+  await expect(
+    page.getByText(`${String(MOCK_SENDER_COUNT)} senders`, { exact: true }),
+  ).toBeVisible()
 })
 
 test('a filter narrows to senders that were never opened', async ({ context, extensionId }) => {
@@ -116,15 +122,18 @@ test('unsubscribing reports one-click and tab fallbacks separately', async ({
   await page.getByRole('button', { name: 'Select all' }).click()
   await page.getByRole('button', { name: 'Unsubscribe', exact: true }).click()
 
-  // Every address is listed before anything happens.
-  await expect(page.getByRole('heading', { name: /Unsubscribe from \d+ senders/ })).toBeVisible()
-  await expect(page.getByText('promo@oneclick.test')).toBeVisible()
+  // The confirmation covers the list rather than replacing it, so assertions
+  // are scoped to the dialog or they match the rows underneath as well.
+  const confirm = page.getByRole('dialog')
+  await expect(confirm.getByRole('heading', { name: /Unsubscribe from \d+ senders/ })).toBeVisible()
+  await expect(confirm.getByText('promo@oneclick.test')).toBeVisible()
 
-  await page.getByRole('button', { name: 'Unsubscribe', exact: true }).click()
+  await confirm.getByRole('button', { name: 'Unsubscribe', exact: true }).click()
 
-  await expect(page.getByRole('heading', { name: 'Done' })).toBeVisible({ timeout: 30_000 })
-  await expect(page.getByText(/1 unsubscribed/)).toBeVisible()
-  await expect(page.getByText(/opened in a tab/)).toBeVisible()
+  const report = page.getByRole('dialog')
+  await expect(report.getByRole('heading', { name: 'Done' })).toBeVisible({ timeout: 30_000 })
+  await expect(report.getByText(/1 unsubscribed/)).toBeVisible()
+  await expect(report.getByText(/opened in a tab/)).toBeVisible()
 
   // The senders without one-click were sent to a tab rather than posted to.
   const opened = await page.evaluate(
