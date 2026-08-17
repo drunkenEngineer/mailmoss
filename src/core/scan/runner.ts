@@ -5,6 +5,19 @@ import type { GmailMessageMetadata } from '../gmail/types'
 
 export const DAY_MS = 24 * 60 * 60 * 1000
 
+/**
+ * How many consecutive pages must fall entirely outside the window before a
+ * category is abandoned.
+ *
+ * Stopping on the first one is too eager. The ordering check can only notice a
+ * problem once a later page holds something newer than an earlier page, so a
+ * mailbox that returns pages out of order can be cut short on page one, before
+ * anything has had a chance to detect it — quietly under-reporting senders with
+ * a result that still looks complete. Requiring a run of them costs a couple of
+ * extra pages on a well-ordered mailbox and makes that failure far less likely.
+ */
+export const PAGES_OUTSIDE_BEFORE_STOP = 3
+
 export type ScanOptions = {
   labels?: readonly string[]
   windowDays?: number
@@ -79,6 +92,7 @@ export async function* runScan(
 
     let warnedOutOfOrder = false
     let previousOldest = Number.POSITIVE_INFINITY
+    let pagesOutside = 0
 
     for (;;) {
       if (signal?.aborted) throw new AbortedError()
@@ -137,9 +151,12 @@ export async function* runScan(
         yield { type: 'batch', label, messages: inWindow, checkpoint }
       }
 
-      // Once the newest message on a page predates the cutoff, everything
-      // after it does too, assuming the ordering warning has not fired.
-      if (newest > 0 && newest < cutoff && !warnedOutOfOrder) {
+      // A run of pages entirely older than the cutoff means the rest are too,
+      // assuming the ordering warning has not fired. A single such page is not
+      // enough: see PAGES_OUTSIDE_BEFORE_STOP.
+      pagesOutside = newest > 0 && newest < cutoff ? pagesOutside + 1 : 0
+
+      if (pagesOutside >= PAGES_OUTSIDE_BEFORE_STOP && !warnedOutOfOrder) {
         yield { type: 'label-done', label, reason: 'outside-window' }
         break
       }

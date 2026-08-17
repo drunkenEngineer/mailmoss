@@ -68,15 +68,34 @@ describe('runScan', () => {
     expect(events.at(-1)).toEqual({ type: 'done', processed: 3, reason: 'complete' })
   })
 
-  it('stops a label once a page falls outside the window', async () => {
+  it('stops a label after a run of pages falls outside the window', async () => {
     const gmail = fakeGmail({
-      L1: [[recent('a', 1)], [recent('old', 400)], [recent('older', 500)]],
+      L1: [
+        [recent('a', 1)],
+        [recent('old1', 400)],
+        [recent('old2', 500)],
+        [recent('old3', 600)],
+        [recent('never-read', 700)],
+      ],
     })
     const events = await collect(runScan(gmail, options))
 
     expect(events).toContainEqual({ type: 'label-done', label: 'L1', reason: 'outside-window' })
-    // The third page is never requested, which is the whole point of stopping.
+    // Only the in-window message is emitted, and the fifth page is never fetched.
     expect(events.filter((e) => e.type === 'batch').flatMap((b) => b.messages)).toHaveLength(1)
+    expect(events.at(-1)).toEqual({ type: 'done', processed: 4, reason: 'complete' })
+  })
+
+  it('does not stop on a single old page, which would truncate an unordered mailbox', async () => {
+    // An old page early on, then recent mail again: stopping at the first would
+    // have lost everything after it.
+    const gmail = fakeGmail({
+      L1: [[recent('a', 1)], [recent('old', 400)], [recent('b', 2)], [recent('c', 3)]],
+    })
+    const events = await collect(runScan(gmail, options))
+
+    const ids = events.filter((e) => e.type === 'batch').flatMap((b) => b.messages.map((m) => m.id))
+    expect(ids).toEqual(['a', 'b', 'c'])
   })
 
   it('drops out-of-window messages from a mixed page', async () => {
