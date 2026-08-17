@@ -153,5 +153,7 @@ test('a completed scan is restored after the panel is closed', async ({ context,
   await reopened.goto(`chrome-extension://${extensionId}/src/sidepanel/index.html`)
   await reopened.getByRole('button', { name: 'Connect Gmail' }).click()
 
-  await expect(reopened.getByText(`${String(MOCK_SENDER_COUNT)} senders`)).toBeVisible()
+  await expect(
+    reopened.getByText(`${String(MOCK_SENDER_COUNT)} senders`, { exact: true }),
+  ).toBeVisible()
 })
