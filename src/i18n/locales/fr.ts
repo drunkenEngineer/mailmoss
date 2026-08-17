@@ -115,6 +115,8 @@ export const fr: Messages = {
   themeDark: 'Sombre',
 
   errorTitle: "Quelque chose s'est mal passé",
+  errorSignInTimeout:
+    "La connexion ne s'est pas terminée. Cherchez une fenêtre Google derrière celle-ci : elle en explique généralement la raison. Si elle indique que l'application n'est pas vérifiée, choisissez Avancé puis continuez. Si elle indique un accès refusé, ce compte n'a pas été ajouté comme testeur.",
   errorAuth: 'La connexion a expiré. Reconnectez-vous pour continuer.',
   errorNetwork: 'Gmail est injoignable. Vérifiez votre connexion.',
   errorRate: 'Gmail limite le débit. Patienter un instant suffit généralement.',

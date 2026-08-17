@@ -96,6 +96,9 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
       const startedAt = Date.now()
       let batches = 0
       let examined = options.resume ? (checkpoint?.processed ?? 0) : 0
+      // Rate covers this run only. Dividing the cumulative total by the time
+      // since resuming reported a speed the API cannot reach.
+      const examinedBefore = examined
 
       try {
         for await (const event of runScan(
@@ -117,7 +120,7 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
             setCheckpoint(event.checkpoint)
             setProcessed(examined)
             setLabel(event.label)
-            setRate((examined / Math.max(1, Date.now() - startedAt)) * 1000)
+            setRate(((examined - examinedBefore) / Math.max(1, Date.now() - startedAt)) * 1000)
 
             if (batches % SAVE_EVERY === 0) {
               await persist({ rows: snapshot, checkpoint: live, startedAt, processed: examined })

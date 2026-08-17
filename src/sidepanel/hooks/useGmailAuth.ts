@@ -12,8 +12,33 @@ export type AuthState =
   | { status: 'connected'; token: string; profile: GmailProfile; grantedScopes: string[] }
   | { status: 'error'; message: string }
 
+/**
+ * Chrome does not always settle getAuthToken when the sign-in window is left
+ * open or dismissed — notably when Google refuses the account and renders an
+ * error page instead of redirecting. Without a bound the panel waits forever
+ * on a window the user may not even realise is open.
+ */
+const SIGN_IN_TIMEOUT_MS = 90_000
+
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : 'Unexpected failure'
+}
+
+async function withTimeout<T>(work: Promise<T>): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+
+  try {
+    return await Promise.race([
+      work,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error('SIGN_IN_TIMED_OUT'))
+        }, SIGN_IN_TIMEOUT_MS)
+      }),
+    ])
+  } finally {
+    if (timer) clearTimeout(timer)
+  }
 }
 
 export function useGmailAuth() {
@@ -22,7 +47,7 @@ export function useGmailAuth() {
   const signIn = useCallback(async (obtain: () => Promise<GrantedToken>) => {
     setState({ status: 'connecting' })
     try {
-      const { token, grantedScopes } = await obtain()
+      const { token, grantedScopes } = await withTimeout(obtain())
       const profile = await createGmailFetch(token)<GmailProfile>({ path: '/users/me/profile' })
       setState({ status: 'connected', token, profile, grantedScopes })
     } catch (error) {

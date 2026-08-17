@@ -68,7 +68,11 @@ export function App() {
       ) : state.status === 'error' ? (
         <main className="flex flex-1 flex-col items-center justify-center gap-3 px-7 text-center">
           <p className="text-sm font-medium text-danger">{t('errorTitle')}</p>
-          <p className="font-mono text-[11px] break-words text-subtle">{state.message}</p>
+          {state.message === 'SIGN_IN_TIMED_OUT' ? (
+            <p className="text-xs leading-relaxed text-muted">{t('errorSignInTimeout')}</p>
+          ) : (
+            <p className="font-mono text-[11px] break-words text-subtle">{state.message}</p>
+          )}
           <button
             type="button"
             className="rounded-md border border-line-strong px-3 py-1.5 text-xs font-medium hover:bg-hovered"

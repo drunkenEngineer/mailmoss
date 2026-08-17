@@ -111,6 +111,8 @@ export const en = {
   themeDark: 'Dark',
 
   errorTitle: 'Something went wrong',
+  errorSignInTimeout:
+    'Sign-in did not finish. Check for a Google window behind this one — it usually explains why. If it says the app is not verified, choose Advanced and continue. If it says access denied, this account has not been added as a tester.',
   errorAuth: 'The connection expired. Connect again to carry on.',
   errorNetwork: 'Could not reach Gmail. Check your connection.',
   errorRate: 'Gmail is rate limiting. Waiting a moment usually clears it.',
