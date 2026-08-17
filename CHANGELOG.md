@@ -3,6 +3,23 @@
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] — 2026-08-17
+
+### Fixed
+
+- **Handled senders stayed handled.** Unsubscribing from or ignoring a sender hid it, but a full
+  rescan rebuilt every row from messages and brought them all back as untouched. Statuses now
+  carry across, and handled senders show what happened to them when displayed.
+- **Scanning no longer abandons a category too early.** It stopped at the first page of messages
+  older than the one-year window. On a mailbox that returns pages out of order — observed on a
+  real account — that could truncate a scan before the ordering check had a chance to notice, and
+  the result would look complete. Three consecutive old pages are now required.
+- **Sign-in cannot hang forever.** Chrome does not always settle the request when its sign-in
+  window is left open, which is what happens when Google refuses an account. It now gives up after
+  ninety seconds and explains where to look.
+- **The scan rate is honest on resume.** It divided cumulative messages by time since resuming,
+  reporting speeds the API cannot reach.
+
 ## [0.1.0] — 2026-08-17
 
 First tagged build. The extension works end to end but has not been through Google's OAuth
