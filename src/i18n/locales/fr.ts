@@ -10,6 +10,10 @@ export const fr: Messages = {
   connectPrivacy: 'Rien ne part ailleurs que chez Google. Tout est calculé dans ce navigateur.',
   connect: 'Connecter Gmail',
   connecting: 'Connexion…',
+  connectOther: 'Utiliser un autre compte',
+  switchAccount: 'Changer de compte',
+  switchAccountNote:
+    "Connecte un autre compte Gmail. L'analyse actuelle est conservée à part et n'est pas mélangée.",
 
   signedInAs: 'Connecté en tant que {email}',
   messagesTotal: '{count} messages dans ce compte',
@@ -27,6 +31,8 @@ export const fr: Messages = {
   scanRefreshing: 'Vérification…',
   refreshUpdated: '{count} nouveaux messages ajoutés.',
   refreshUpToDate: 'Rien de nouveau depuis la dernière analyse.',
+  refreshBaseline:
+    "Cette analyse est antérieure au suivi des nouveautés : il n'y avait rien à comparer. Le suivi démarre maintenant — revenez plus tard pour voir ce qui arrive.",
   refreshTooOld:
     "Trop de temps a passé depuis la dernière analyse pour une simple vérification. Gmail ne conserve qu'environ une semaine d'historique : relancez une analyse complète pour rattraper.",
   scanRestored: 'Analyse précédente récupérée.',

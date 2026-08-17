@@ -37,9 +37,11 @@ export function SettingsPanel({
   showHandled,
   diagnostics,
   storageLabel,
+  canChooseAccount,
   onAllTime,
   onShowHandled,
   onDiagnostics,
+  onSwitchAccount,
   onWipe,
 }: {
   scopes: string
@@ -47,9 +49,11 @@ export function SettingsPanel({
   showHandled: boolean
   diagnostics: boolean
   storageLabel: string
+  canChooseAccount: boolean
   onAllTime: (value: boolean) => void
   onShowHandled: (value: boolean) => void
   onDiagnostics: (value: boolean) => void
+  onSwitchAccount: () => void
   onWipe: () => void
 }) {
   const t = useT()
@@ -74,6 +78,19 @@ export function SettingsPanel({
         <p>{t('settingsScope', { scopes })}</p>
         <p>{t('settingsStorage', { size: storageLabel })}</p>
       </div>
+
+      {canChooseAccount && (
+        <div className="border-t border-line pt-3">
+          <button
+            type="button"
+            className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs font-medium hover:bg-hovered"
+            onClick={onSwitchAccount}
+          >
+            {t('switchAccount')}
+          </button>
+          <p className="mt-1 text-[11px] text-subtle">{t('switchAccountNote')}</p>
+        </div>
+      )}
 
       <div className="border-t border-line pt-3">
         <button

@@ -13,6 +13,7 @@ const NOTICE_MESSAGES: Record<RefreshNotice['kind'], MessageKey> = {
   updated: 'refreshUpdated',
   'up-to-date': 'refreshUpToDate',
   'too-old': 'refreshTooOld',
+  baseline: 'refreshBaseline',
 }
 
 export function ScanStatus({
@@ -52,68 +53,70 @@ export function ScanStatus({
 
   return (
     <div className="border-b border-line px-4 py-3">
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          {scanning ? (
-            <>
-              <p className="truncate text-xs font-medium tabular-nums">
-                {t('scanProgress', { processed, senders })}
-              </p>
-              <p className="truncate text-[11px] text-subtle">
-                {t('scanRate', { rate: rate.toFixed(0) })}
-                {label !== '' && ` · ${t('scanCategory', { label })}`}
-              </p>
-            </>
-          ) : (
-            <p className={`truncate text-xs ${phase === 'error' ? 'text-danger' : 'text-muted'}`}>
-              {refreshing && t('scanRefreshing')}
-              {phase === 'done' && t('scanFinished', { processed, senders })}
-              {phase === 'cancelled' && t('scanCancelled')}
-              {phase === 'error' && failure && t(FAILURE_MESSAGES[failure])}
+      {/* The panel is narrow, so a full sentence cannot share a line with two
+          buttons without being cut off. Status gets its own width and wraps. */}
+      <div className="min-w-0">
+        {scanning ? (
+          <>
+            <p className="text-xs font-medium tabular-nums">
+              {t('scanProgress', { processed, senders })}
             </p>
-          )}
-        </div>
+            <p className="text-[11px] text-subtle">
+              {t('scanRate', { rate: rate.toFixed(0) })}
+              {label !== '' && ` · ${t('scanCategory', { label })}`}
+            </p>
+          </>
+        ) : (
+          <p
+            className={`text-xs leading-relaxed ${phase === 'error' ? 'text-danger' : 'text-muted'}`}
+          >
+            {refreshing && t('scanRefreshing')}
+            {phase === 'done' && t('scanFinished', { processed, senders })}
+            {phase === 'cancelled' && t('scanCancelled')}
+            {phase === 'error' && failure && t(FAILURE_MESSAGES[failure])}
+          </p>
+        )}
+      </div>
 
-        <div className="flex shrink-0 gap-2">
-          {scanning ? (
-            <button
-              type="button"
-              className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs hover:bg-hovered"
-              onClick={onCancel}
-            >
-              {t('scanCancel')}
-            </button>
-          ) : (
-            <>
-              {canResume && (
-                <button
-                  type="button"
-                  className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs hover:bg-hovered"
-                  onClick={onResume}
-                >
-                  {t('scanResume')}
-                </button>
-              )}
-              {canRefresh && (
-                <button
-                  type="button"
-                  className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs hover:bg-hovered disabled:opacity-50"
-                  disabled={refreshing}
-                  onClick={onRefresh}
-                >
-                  {refreshing ? t('scanRefreshing') : t('scanRefresh')}
-                </button>
-              )}
+      <div className="mt-2.5 flex flex-wrap justify-end gap-2">
+        {scanning ? (
+          <button
+            type="button"
+            className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs hover:bg-hovered"
+            onClick={onCancel}
+          >
+            {t('scanCancel')}
+          </button>
+        ) : (
+          <>
+            {canResume && (
               <button
                 type="button"
-                className="rounded-md bg-accent px-2.5 py-1.5 text-xs font-medium text-accent-ink hover:bg-accent-hover"
-                onClick={onStart}
+                className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs hover:bg-hovered"
+                onClick={onResume}
               >
-                {processed > 0 ? t('scanAgain') : t('scanStart')}
+                {t('scanResume')}
               </button>
-            </>
-          )}
-        </div>
+            )}
+            {canRefresh && (
+              <button
+                type="button"
+                className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs hover:bg-hovered disabled:opacity-50"
+                disabled={refreshing}
+                onClick={onRefresh}
+              >
+                {refreshing ? t('scanRefreshing') : t('scanRefresh')}
+              </button>
+            )}
+            <button
+              type="button"
+              className="rounded-md bg-accent px-2.5 py-1.5 text-xs font-medium text-accent-ink hover:bg-accent-hover"
+              onClick={onStart}
+            >
+              {processed > 0 ? t('scanAgain') : t('scanStart')}
+            </button>
+          </>
+        )}
       </div>
 
       {scanning && (

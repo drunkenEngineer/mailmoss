@@ -8,6 +8,10 @@ export const en = {
   connectPrivacy: 'Nothing is sent anywhere but Google. Everything is worked out in this browser.',
   connect: 'Connect Gmail',
   connecting: 'Connecting…',
+  connectOther: 'Use a different account',
+  switchAccount: 'Switch account',
+  switchAccountNote:
+    'Connects a different Gmail account. The current scan is kept separately and is not mixed in.',
 
   signedInAs: 'Signed in as {email}',
   messagesTotal: '{count} messages in this account',
@@ -25,6 +29,8 @@ export const en = {
   scanRefreshing: 'Checking…',
   refreshUpdated: 'Added {count} new messages.',
   refreshUpToDate: 'Nothing new since the last scan.',
+  refreshBaseline:
+    'This scan predates change tracking, so there was nothing to compare against. Tracking starts from now — check again later to see what arrives.',
   refreshTooOld:
     'Too long since the last scan for a quick check. Gmail only keeps about a week of history, so run a full scan to catch up.',
   scanRestored: 'Picked up a saved scan from before.',

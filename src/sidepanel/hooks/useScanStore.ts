@@ -61,11 +61,12 @@ export function useScanStore(email: string) {
   )
 
   const clear = useCallback(async () => {
-    await store.clearScan()
+    if (accountHash === '') return
+    await store.clearScan(accountHash)
     setRestored(null)
     setNote('Cleared.')
     setUsage(await store.usage())
-  }, [store])
+  }, [accountHash, store])
 
   return { ready, accountHash, restored, note, usage, save, clear }
 }

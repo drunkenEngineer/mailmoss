@@ -28,6 +28,8 @@ export function Dashboard({
   scopes,
   store,
   showSettings,
+  canChooseAccount,
+  onSwitchAccount,
   onRevoke,
 }: {
   token: string
@@ -35,6 +37,8 @@ export function Dashboard({
   scopes: string
   store: ReturnType<typeof useScanStore>
   showSettings: boolean
+  canChooseAccount: boolean
+  onSwitchAccount: () => void
   onRevoke: () => void
 }) {
   const t = useT()
@@ -98,6 +102,8 @@ export function Dashboard({
           onAllTime={setAllTime}
           onShowHandled={setShowHandled}
           onDiagnostics={setDiagnostics}
+          canChooseAccount={canChooseAccount}
+          onSwitchAccount={onSwitchAccount}
           onWipe={onRevoke}
         />
       )}

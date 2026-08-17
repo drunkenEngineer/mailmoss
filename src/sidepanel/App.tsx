@@ -13,7 +13,7 @@ function shortScope(scope: string): string {
 
 export function App() {
   const t = useT()
-  const { state, connect, disconnect, reset } = useGmailAuth()
+  const { state, connect, connectAs, canChooseAccount, disconnect, reset } = useGmailAuth()
   const [showSettings, setShowSettings] = useState(false)
 
   const connected = state.status === 'connected'
@@ -61,6 +61,8 @@ export function App() {
           token={state.token}
           scopes={state.grantedScopes.map(shortScope).join(', ')}
           showSettings={showSettings}
+          canChooseAccount={canChooseAccount}
+          onSwitchAccount={() => void connectAs()}
           onRevoke={() => void disconnect(state.token)}
         />
       ) : state.status === 'error' ? (
@@ -76,7 +78,12 @@ export function App() {
           </button>
         </main>
       ) : (
-        <ConnectView connecting={state.status === 'connecting'} onConnect={() => void connect()} />
+        <ConnectView
+          connecting={state.status === 'connecting'}
+          canChooseAccount={canChooseAccount}
+          onConnect={() => void connect()}
+          onConnectAs={() => void connectAs()}
+        />
       )}
     </div>
   )
@@ -92,12 +99,16 @@ function ConnectedPanel({
   token,
   scopes,
   showSettings,
+  canChooseAccount,
+  onSwitchAccount,
   onRevoke,
 }: {
   email: string
   token: string
   scopes: string
   showSettings: boolean
+  canChooseAccount: boolean
+  onSwitchAccount: () => void
   onRevoke: () => void
 }) {
   const store = useScanStore(email)
@@ -114,6 +125,8 @@ function ConnectedPanel({
       scopes={scopes}
       store={store}
       showSettings={showSettings}
+      canChooseAccount={canChooseAccount}
+      onSwitchAccount={onSwitchAccount}
       onRevoke={onRevoke}
     />
   )

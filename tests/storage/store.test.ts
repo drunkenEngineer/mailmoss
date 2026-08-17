@@ -104,30 +104,63 @@ describe('createScanStore', () => {
     expect((await createScanStore(memoryArea()).load('hash')).status).toBe('empty')
   })
 
-  it('discards a scan belonging to another account', async () => {
+  it('keeps one scan per account, so connecting another does not destroy the first', async () => {
     const store = createScanStore(memoryArea())
-    await store.save(emptyScan('hash-a', 100))
 
-    const outcome = await store.load('hash-b')
-    expect(outcome.status).toBe('discarded')
-    expect(outcome.status === 'discarded' && outcome.reason).toContain('different account')
+    await store.save({ ...emptyScan('hash-a', 1), processed: 111 })
+    await store.save({ ...emptyScan('hash-b', 2), processed: 222 })
+
+    const a = await store.load('hash-a')
+    const b = await store.load('hash-b')
+
+    expect(a.status === 'loaded' && a.document.processed).toBe(111)
+    expect(b.status === 'loaded' && b.document.processed).toBe(222)
   })
 
-  it('clears the scan but leaves other keys alone', async () => {
+  it('reports empty, not discarded, for an account that has never scanned', async () => {
+    const store = createScanStore(memoryArea())
+    await store.save(emptyScan('hash-a', 1))
+
+    expect((await store.load('hash-b')).status).toBe('empty')
+  })
+
+  it('adopts a scan left in the old single slot by its own account', async () => {
+    const area = memoryArea({ scan: { ...emptyScan('hash-a', 1), processed: 42 } })
+    const store = createScanStore(area)
+
+    const outcome = await store.load('hash-a')
+
+    expect(outcome.status === 'loaded' && outcome.document.processed).toBe(42)
+    expect(area.data['scan:hash-a']).toBeDefined()
+    expect(area.data.scan).toBeUndefined()
+  })
+
+  it('leaves an old slot alone for an account that does not own it', async () => {
+    const area = memoryArea({ scan: emptyScan('hash-a', 1) })
+    const store = createScanStore(area)
+
+    expect((await store.load('hash-b')).status).toBe('empty')
+    expect(area.data.scan).toBeDefined()
+  })
+
+  it('clears one account without touching another, or the locale', async () => {
     const area = memoryArea({ locale: 'fr' })
     const store = createScanStore(area)
-    await store.save(emptyScan('hash', 1))
+    await store.save(emptyScan('hash-a', 1))
+    await store.save(emptyScan('hash-b', 1))
 
-    await store.clearScan()
+    await store.clearScan('hash-a')
 
-    expect(area.data.scan).toBeUndefined()
+    expect(area.data['scan:hash-a']).toBeUndefined()
+    expect(area.data['scan:hash-b']).toBeDefined()
     expect(area.data.locale).toBe('fr')
   })
 
-  it('wipes everything the extension owns, including the locale', async () => {
-    const area = memoryArea({ locale: 'fr' })
+  it('wipes every account and every preference', async () => {
+    const area = memoryArea({ locale: 'fr', theme: 'dark' })
     const store = createScanStore(area)
-    await store.save(emptyScan('hash', 1))
+    await store.save(emptyScan('hash-a', 1))
+    await store.save(emptyScan('hash-b', 1))
 
     await store.wipeAll()
 
@@ -135,7 +168,7 @@ describe('createScanStore', () => {
   })
 
   it('reports usage', async () => {
-    const store = createScanStore(memoryArea({ scan: 'x' }))
+    const store = createScanStore(memoryArea({ 'scan:hash': 'x' }))
     expect((await store.usage()).bytes).toBeGreaterThan(0)
   })
 })

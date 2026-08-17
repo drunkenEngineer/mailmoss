@@ -12,7 +12,11 @@ import type { useScanStore } from './useScanStore'
 export type ScanPhase = 'idle' | 'scanning' | 'refreshing' | 'done' | 'cancelled' | 'error'
 
 export type RefreshNotice =
-  { kind: 'updated'; count: number } | { kind: 'up-to-date' } | { kind: 'too-old' }
+  | { kind: 'updated'; count: number }
+  | { kind: 'up-to-date' }
+  | { kind: 'too-old' }
+  /** A scan from before change-tracking existed; this run only sets the mark. */
+  | { kind: 'baseline' }
 
 export type ScanFailure = 'auth' | 'network' | 'rate' | 'unknown'
 
@@ -188,12 +192,28 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
   )
 
   const refresh = useCallback(async () => {
-    if (historyId === '') return
-
     setPhase('refreshing')
     setNotice(null)
 
     try {
+      // A scan completed before change-tracking existed has no mark to compare
+      // against. Rather than hiding the feature, set the mark now and say so:
+      // claiming "nothing new" would be a guess about the intervening period.
+      if (historyId === '') {
+        const marker = await currentHistoryId(createGmailFetch(token))
+        setHistoryId(marker)
+        setNotice({ kind: 'baseline' })
+        setPhase('done')
+        await persist({
+          rows: senders,
+          checkpoint: undefined,
+          startedAt: Date.now(),
+          processed,
+          lastHistoryId: marker,
+        })
+        return
+      }
+
       const result = await refreshSince(createGmailFetch(token), historyId)
 
       if (result.status === 'too-old') {
@@ -252,7 +272,7 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
     outOfOrder,
     notice,
     canResume: checkpoint !== undefined,
-    canRefresh: historyId !== '' && checkpoint === undefined,
+    canRefresh: phase === 'done' && checkpoint === undefined,
     start,
     resume,
     refresh,
