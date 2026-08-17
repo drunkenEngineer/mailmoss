@@ -1,4 +1,4 @@
-import type { ScanFailure, ScanPhase } from '../hooks/useScan'
+import type { RefreshNotice, ScanFailure, ScanPhase } from '../hooks/useScan'
 import { useT } from '@/i18n'
 import type { MessageKey } from '@/i18n'
 
@@ -9,6 +9,12 @@ const FAILURE_MESSAGES: Record<ScanFailure, MessageKey> = {
   unknown: 'errorTitle',
 }
 
+const NOTICE_MESSAGES: Record<RefreshNotice['kind'], MessageKey> = {
+  updated: 'refreshUpdated',
+  'up-to-date': 'refreshUpToDate',
+  'too-old': 'refreshTooOld',
+}
+
 export function ScanStatus({
   phase,
   failure,
@@ -17,9 +23,12 @@ export function ScanStatus({
   rate,
   label,
   outOfOrder,
+  notice,
   canResume,
+  canRefresh,
   onStart,
   onResume,
+  onRefresh,
   onCancel,
 }: {
   phase: ScanPhase
@@ -29,13 +38,17 @@ export function ScanStatus({
   rate: number
   label: string
   outOfOrder: boolean
+  notice: RefreshNotice | null
   canResume: boolean
+  canRefresh: boolean
   onStart: () => void
   onResume: () => void
+  onRefresh: () => void
   onCancel: () => void
 }) {
   const t = useT()
   const scanning = phase === 'scanning'
+  const refreshing = phase === 'refreshing'
 
   return (
     <div className="border-b border-line px-4 py-3">
@@ -53,6 +66,7 @@ export function ScanStatus({
             </>
           ) : (
             <p className={`truncate text-xs ${phase === 'error' ? 'text-danger' : 'text-muted'}`}>
+              {refreshing && t('scanRefreshing')}
               {phase === 'done' && t('scanFinished', { processed, senders })}
               {phase === 'cancelled' && t('scanCancelled')}
               {phase === 'error' && failure && t(FAILURE_MESSAGES[failure])}
@@ -80,6 +94,16 @@ export function ScanStatus({
                   {t('scanResume')}
                 </button>
               )}
+              {canRefresh && (
+                <button
+                  type="button"
+                  className="rounded-md border border-line-strong px-2.5 py-1.5 text-xs hover:bg-hovered disabled:opacity-50"
+                  disabled={refreshing}
+                  onClick={onRefresh}
+                >
+                  {refreshing ? t('scanRefreshing') : t('scanRefresh')}
+                </button>
+              )}
               <button
                 type="button"
                 className="rounded-md bg-accent px-2.5 py-1.5 text-xs font-medium text-accent-ink hover:bg-accent-hover"
@@ -98,6 +122,19 @@ export function ScanStatus({
         <div className="mt-2.5 h-1 overflow-hidden rounded-full bg-meter-track">
           <div className="h-full w-1/3 animate-pulse rounded-full bg-meter-fill" />
         </div>
+      )}
+
+      {notice && (
+        <p
+          className={`mt-2.5 rounded-md px-2.5 py-1.5 text-[11px] ${
+            notice.kind === 'too-old' ? 'bg-warn-soft text-warn' : 'bg-sunken text-muted'
+          }`}
+        >
+          {t(
+            NOTICE_MESSAGES[notice.kind],
+            notice.kind === 'updated' ? { count: notice.count } : {},
+          )}
+        </p>
       )}
 
       {outOfOrder && (

@@ -3,12 +3,16 @@ import { aggregate } from '@/core/aggregate/senders'
 import type { SenderAggregate, SenderStatus } from '@/core/aggregate/senders'
 import { createGmailFetch } from '@/core/gmail/client'
 import { GmailError } from '@/core/gmail/errors'
+import { currentHistoryId, refreshSince } from '@/core/scan/refresh'
 import { runScan } from '@/core/scan/runner'
 import type { ScanCheckpoint } from '@/core/scan/runner'
 import { SCHEMA_VERSION } from '@/storage/schema'
 import type { useScanStore } from './useScanStore'
 
-export type ScanPhase = 'idle' | 'scanning' | 'done' | 'cancelled' | 'error'
+export type ScanPhase = 'idle' | 'scanning' | 'refreshing' | 'done' | 'cancelled' | 'error'
+
+export type RefreshNotice =
+  { kind: 'updated'; count: number } | { kind: 'up-to-date' } | { kind: 'too-old' }
 
 export type ScanFailure = 'auth' | 'network' | 'rate' | 'unknown'
 
@@ -37,6 +41,8 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
   const [label, setLabel] = useState('')
   const [rate, setRate] = useState(0)
   const [outOfOrder, setOutOfOrder] = useState(false)
+  const [historyId, setHistoryId] = useState(restored?.lastHistoryId ?? '')
+  const [notice, setNotice] = useState<RefreshNotice | null>(null)
 
   const abortRef = useRef<AbortController | null>(null)
 
@@ -49,17 +55,20 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
       checkpoint: ScanCheckpoint | undefined
       startedAt: number
       processed: number
+      lastHistoryId?: string
     }) => {
+      const marker = options.lastHistoryId ?? historyId
       await save({
         schemaVersion: SCHEMA_VERSION,
         accountHash,
         startedAt: options.startedAt,
         processed: options.processed,
         senders: options.rows,
+        ...(marker === '' ? {} : { lastHistoryId: marker }),
         ...(options.checkpoint ? { checkpoint: options.checkpoint } : { completedAt: Date.now() }),
       })
     },
-    [accountHash, save],
+    [accountHash, historyId, save],
   )
 
   const run = useCallback(
@@ -115,11 +124,21 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
             setCheckpoint(undefined)
             setProcessed(examined)
             setPhase('done')
+
+            // Read after the scan, not before. Taking it first would make the
+            // next refresh re-deliver messages the scan already counted, and
+            // with no stored message ids there is nothing to deduplicate
+            // against. Missing the handful that arrived mid-scan cannot move a
+            // ranking built on hundreds.
+            const marker = await currentHistoryId(createGmailFetch(token)).catch(() => '')
+            if (marker !== '') setHistoryId(marker)
+
             await persist({
               rows: [...rows.values()],
               checkpoint: undefined,
               startedAt,
               processed: examined,
+              lastHistoryId: marker,
             })
           }
         }
@@ -168,10 +187,57 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
     [checkpoint, persist, processed, senders],
   )
 
+  const refresh = useCallback(async () => {
+    if (historyId === '') return
+
+    setPhase('refreshing')
+    setNotice(null)
+
+    try {
+      const result = await refreshSince(createGmailFetch(token), historyId)
+
+      if (result.status === 'too-old') {
+        setNotice({ kind: 'too-old' })
+        setPhase('done')
+        return
+      }
+
+      if (result.status === 'up-to-date') {
+        setHistoryId(result.historyId)
+        setNotice({ kind: 'up-to-date' })
+        setPhase('done')
+        return
+      }
+
+      const rows = new Map(senders.map((sender) => [sender.key, sender]))
+      aggregate(result.messages, rows)
+      const next = [...rows.values()]
+
+      setSenders(next)
+      setHistoryId(result.historyId)
+      setProcessed(processed + result.messages.length)
+      setNotice({ kind: 'updated', count: result.messages.length })
+      setPhase('done')
+
+      await persist({
+        rows: next,
+        checkpoint: undefined,
+        startedAt: Date.now(),
+        processed: processed + result.messages.length,
+        lastHistoryId: result.historyId,
+      })
+    } catch (error) {
+      setFailure(failureOf(error))
+      setPhase('error')
+    }
+  }, [historyId, persist, processed, senders, token])
+
   const reset = useCallback(async () => {
     setSenders([])
     setProcessed(0)
     setCheckpoint(undefined)
+    setHistoryId('')
+    setNotice(null)
     setPhase('idle')
     await clear()
   }, [clear])
@@ -184,9 +250,12 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
     label,
     rate,
     outOfOrder,
+    notice,
     canResume: checkpoint !== undefined,
+    canRefresh: historyId !== '' && checkpoint === undefined,
     start,
     resume,
+    refresh,
     cancel,
     markStatus,
     reset,

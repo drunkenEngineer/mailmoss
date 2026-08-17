@@ -23,6 +23,12 @@ export const fr: Messages = {
   scanProgress: '{processed} messages · {senders} expéditeurs',
   scanRate: '{rate} par seconde',
   scanCategory: 'Lecture de {label}',
+  scanRefresh: 'Voir les nouveaux',
+  scanRefreshing: 'Vérification…',
+  refreshUpdated: '{count} nouveaux messages ajoutés.',
+  refreshUpToDate: 'Rien de nouveau depuis la dernière analyse.',
+  refreshTooOld:
+    "Trop de temps a passé depuis la dernière analyse pour une simple vérification. Gmail ne conserve qu'environ une semaine d'historique : relancez une analyse complète pour rattraper.",
   scanRestored: 'Analyse précédente récupérée.',
   scanCancelled: "Annulé. Reprendre repart d'où l'analyse s'est arrêtée.",
   scanFinished: '{processed} messages analysés, {senders} expéditeurs trouvés.',

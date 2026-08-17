@@ -21,6 +21,12 @@ export const en = {
   scanProgress: '{processed} messages · {senders} senders',
   scanRate: '{rate} per second',
   scanCategory: 'Reading {label}',
+  scanRefresh: 'Check for new',
+  scanRefreshing: 'Checking…',
+  refreshUpdated: 'Added {count} new messages.',
+  refreshUpToDate: 'Nothing new since the last scan.',
+  refreshTooOld:
+    'Too long since the last scan for a quick check. Gmail only keeps about a week of history, so run a full scan to catch up.',
   scanRestored: 'Picked up a saved scan from before.',
   scanCancelled: 'Cancelled. Resume continues where it stopped.',
   scanFinished: 'Scanned {processed} messages and found {senders} senders.',

@@ -21,6 +21,24 @@ export type GmailHeader = {
   value: string
 }
 
+export type GmailHistoryMessage = {
+  id: string
+  threadId: string
+  labelIds?: string[]
+}
+
+export type GmailHistoryRecord = {
+  id: string
+  messagesAdded?: { message: GmailHistoryMessage }[]
+}
+
+export type GmailHistoryList = {
+  history?: GmailHistoryRecord[]
+  nextPageToken?: string
+  /** The mailbox's current history id, whether or not anything changed. */
+  historyId: string
+}
+
 export type GmailMessageMetadata = {
   id: string
   threadId: string

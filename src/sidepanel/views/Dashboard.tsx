@@ -110,9 +110,12 @@ export function Dashboard({
         rate={scan.rate}
         label={scan.label}
         outOfOrder={scan.outOfOrder}
+        notice={scan.notice}
         canResume={scan.canResume}
+        canRefresh={scan.canRefresh}
         onStart={() => void scan.start(allTime)}
         onResume={() => void scan.resume(allTime)}
+        onRefresh={() => void scan.refresh()}
         onCancel={scan.cancel}
       />
 
