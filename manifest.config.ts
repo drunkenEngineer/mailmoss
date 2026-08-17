@@ -1,6 +1,13 @@
 import { defineManifest } from '@crxjs/vite-plugin'
 import { DEFAULT_SCOPES } from './src/auth/scopes.ts'
 
+const ICONS = {
+  16: 'icons/icon-16.png',
+  32: 'icons/icon-32.png',
+  48: 'icons/icon-48.png',
+  128: 'icons/icon-128.png',
+}
+
 // client_id and key come from .env — see .env.example. Without a fixed key the
 // extension ID changes on every reload, which breaks the OAuth client binding.
 export function buildManifest(env: Record<string, string>) {
@@ -28,8 +35,11 @@ export function buildManifest(env: Record<string, string>) {
     side_panel: {
       default_path: 'src/sidepanel/index.html',
     },
+    // Generated from assets/logo.svg by `npm run icons`. Do not hand-edit.
+    icons: ICONS,
     action: {
       default_title: '__MSG_extName__',
+      default_icon: ICONS,
     },
   })
 }

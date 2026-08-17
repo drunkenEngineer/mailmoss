@@ -6,12 +6,15 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import prettier from 'eslint-config-prettier'
 
 export default tseslint.config(
-  { ignores: ['dist/', 'dist-dev/', 'coverage/', 'node_modules/'] },
+  { ignores: ['dist/', 'dist-dev/', 'dist-zip/', 'coverage/', 'node_modules/'] },
 
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
 
   {
+    // The type-aware parser only makes sense where there is a TypeScript
+    // project behind the file; pointing it at plain scripts fails to resolve.
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -22,10 +25,6 @@ export default tseslint.config(
         ...globals.webextensions,
       },
     },
-  },
-
-  {
-    files: ['**/*.{ts,tsx}'],
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
@@ -54,8 +53,12 @@ export default tseslint.config(
   },
 
   {
-    files: ['**/*.js'],
+    files: ['**/*.{js,mjs,cjs}'],
     ...tseslint.configs.disableTypeChecked,
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: { projectService: false, project: false },
+    },
   },
 
   prettier,

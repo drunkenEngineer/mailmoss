@@ -31,6 +31,17 @@ run means a green pipeline.
 Hooks are installed by `npm install`: `pre-commit` formats and lints staged files, `pre-push`
 type checks and runs the tests.
 
+## Icons
+
+`assets/logo.svg` is the source. The PNGs Chrome needs are generated from it:
+
+```
+npm run icons
+```
+
+That writes `public/icons/icon-{16,32,48,128}.png`. Edit the SVG and regenerate; never hand-edit
+the PNGs, since the next run overwrites them.
+
 ## Branches and commits
 
 Work on a branch off `main`, named `type/short-description`:
