@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # A tag is not a licence to skip the checks; a broken release is worse
+      # than a late one.
+      #
+      # None of these are secrets: the OAuth clients are public installed-app
+      # clients and the key is a public key. They are repository variables so
+      # the released build can actually sign in, rather than shipping a
+      # manifest with the auth fields missing.
+      - run: npm run verify
+        env:
+          VITE_OAUTH_CLIENT_ID: ${{ vars.VITE_OAUTH_CLIENT_ID }}
+          VITE_OAUTH_WEB_CLIENT_ID: ${{ vars.VITE_OAUTH_WEB_CLIENT_ID }}
+          VITE_EXTENSION_KEY: ${{ vars.VITE_EXTENSION_KEY }}
+
+      - name: Fail early if the build has no OAuth client
+        run: |
+          grep -q '"oauth2"' dist/manifest.json || {
+            echo "dist/manifest.json has no oauth2 block."
+            echo "Set VITE_OAUTH_CLIENT_ID and VITE_EXTENSION_KEY as repository variables."
+            exit 1
+          }
+
+      - name: Package
+        run: |
+          cd dist
+          zip -r "../mailmoss-${GITHUB_REF_NAME}.zip" .
+
+      - name: Draft the release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: mailmoss-${{ github.ref_name }}.zip
+          body: |
+            Load this build by unzipping it and choosing **Load unpacked** at
+            `chrome://extensions` with developer mode on.
+
+            Gmail access needs your own Google Cloud project; see the README.
