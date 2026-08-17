@@ -81,7 +81,6 @@ export const en = {
   settingsFullScanNote:
     'Slower, and rarely changes the ranking. Newsletters and notifications are covered either way.',
   settingsShowHandled: 'Show senders already handled',
-  settingsDiagnostics: 'Developer diagnostics',
   settingsWipe: 'Revoke access and wipe local data',
   settingsWipeNote: 'Removes the access grant and deletes everything stored in this browser.',
   settingsStorage: 'Stored locally: {size}',

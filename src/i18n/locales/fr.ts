@@ -84,7 +84,6 @@ export const fr: Messages = {
   settingsFullScanNote:
     'Plus lent, et change rarement le classement. Newsletters et notifications sont couvertes dans les deux cas.',
   settingsShowHandled: 'Afficher les expéditeurs déjà traités',
-  settingsDiagnostics: 'Diagnostics développeur',
   settingsWipe: "Révoquer l'accès et effacer les données locales",
   settingsWipeNote:
     "Retire l'autorisation d'accès et supprime tout ce qui est stocké dans ce navigateur.",

@@ -25,8 +25,18 @@ Both values go in `.env`; neither is committed.
 npm run verify
 ```
 
-That runs lint, type check, tests and build in order. CI runs the same thing, so a green local
-run means a green pipeline.
+That runs lint, format, type check, unit tests and build in order. CI runs the same thing, so a
+green local run means a green pipeline.
+
+End-to-end tests load the built extension into a real Chrome:
+
+```
+npm run test:e2e
+```
+
+They need a build first (`npm run build`) and a real display: Chrome refuses to load extensions
+headlessly, so Playwright runs headed. On a headless machine, prefix with `xvfb-run`, which is
+what CI does.
 
 Hooks are installed by `npm install`: `pre-commit` formats and lints staged files, `pre-push`
 type checks and runs the tests.
@@ -107,6 +117,4 @@ listing, live in `public/_locales/<locale>/messages.json` and are referenced fro
 as `__MSG_key__`. That mechanism is separate from the in-app layer because Chrome resolves it
 before the extension runs.
 
-The one exception is `src/sidepanel/diagnostics/`. Those panels are development instrumentation
-that gets deleted before release, so translating them would be wasted effort. Nothing outside
-that folder may hardcode a user-visible string.
+There are no exceptions: nothing may hardcode a user-visible string.

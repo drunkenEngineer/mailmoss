@@ -3,6 +3,8 @@ dist/
 dist-dev/
 dist-zip/
 .vite/
+test-results/
+playwright-report/
 
 .env
 .env.local

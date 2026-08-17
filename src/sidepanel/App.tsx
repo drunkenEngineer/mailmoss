@@ -121,7 +121,6 @@ function ConnectedPanel({
     <Dashboard
       key={store.accountHash}
       token={token}
-      email={email}
       scopes={scopes}
       store={store}
       showSettings={showSettings}

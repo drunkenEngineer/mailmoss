@@ -35,24 +35,20 @@ export function SettingsPanel({
   scopes,
   allTime,
   showHandled,
-  diagnostics,
   storageLabel,
   canChooseAccount,
   onAllTime,
   onShowHandled,
-  onDiagnostics,
   onSwitchAccount,
   onWipe,
 }: {
   scopes: string
   allTime: boolean
   showHandled: boolean
-  diagnostics: boolean
   storageLabel: string
   canChooseAccount: boolean
   onAllTime: (value: boolean) => void
   onShowHandled: (value: boolean) => void
-  onDiagnostics: (value: boolean) => void
   onSwitchAccount: () => void
   onWipe: () => void
 }) {
@@ -72,7 +68,6 @@ export function SettingsPanel({
         note={t('settingsFullScanNote')}
       />
       <Toggle checked={showHandled} onChange={onShowHandled} label={t('settingsShowHandled')} />
-      <Toggle checked={diagnostics} onChange={onDiagnostics} label={t('settingsDiagnostics')} />
 
       <div className="space-y-1 border-t border-line pt-3 text-[11px] text-subtle">
         <p>{t('settingsScope', { scopes })}</p>

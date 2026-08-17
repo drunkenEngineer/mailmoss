@@ -53,6 +53,18 @@ export default tseslint.config(
   },
 
   {
+    // Playwright fixtures take a callback named `use`, which the React rules
+    // read as a hook, and their signature is `({}, use)` by design.
+    files: ['e2e/**/*.ts'],
+    languageOptions: { globals: globals.node },
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      'no-empty-pattern': 'off',
+      '@typescript-eslint/require-await': 'off',
+    },
+  },
+
+  {
     files: ['**/*.{js,mjs,cjs}'],
     ...tseslint.configs.disableTypeChecked,
     languageOptions: {

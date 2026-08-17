@@ -9,7 +9,6 @@ import { SelectionBar } from '../components/SelectionBar'
 import { SenderList } from '../components/SenderList'
 import { SettingsPanel } from '../components/SettingsPanel'
 import { UnsubscribeReport } from '../components/UnsubscribeReport'
-import { Diagnostics } from '../diagnostics/Diagnostics'
 import { useScan } from '../hooks/useScan'
 import type { useScanStore } from '../hooks/useScanStore'
 import { useUnsubscribeRun } from '../hooks/useUnsubscribeRun'
@@ -24,7 +23,6 @@ const PANEL_OPENED_AT = Date.now()
 
 export function Dashboard({
   token,
-  email,
   scopes,
   store,
   showSettings,
@@ -33,7 +31,6 @@ export function Dashboard({
   onRevoke,
 }: {
   token: string
-  email: string
   scopes: string
   store: ReturnType<typeof useScanStore>
   showSettings: boolean
@@ -52,7 +49,6 @@ export function Dashboard({
   const [pending, setPending] = useState<SenderAggregate[] | null>(null)
   const [allTime, setAllTime] = useState(false)
   const [showHandled, setShowHandled] = useState(false)
-  const [diagnostics, setDiagnostics] = useState(false)
 
   const now = PANEL_OPENED_AT
   const visible = useMemo(
@@ -97,11 +93,9 @@ export function Dashboard({
           scopes={scopes}
           allTime={allTime}
           showHandled={showHandled}
-          diagnostics={diagnostics}
           storageLabel={`${(store.usage.bytes / 1024).toFixed(1)} KB`}
           onAllTime={setAllTime}
           onShowHandled={setShowHandled}
-          onDiagnostics={setDiagnostics}
           canChooseAccount={canChooseAccount}
           onSwitchAccount={onSwitchAccount}
           onWipe={onRevoke}
@@ -178,12 +172,6 @@ export function Dashboard({
             }}
           />
         </>
-      )}
-
-      {diagnostics && (
-        <div className="max-h-64 overflow-y-auto border-t border-line">
-          <Diagnostics token={token} email={email} />
-        </div>
       )}
 
       {pending && run.phase === 'idle' && (
