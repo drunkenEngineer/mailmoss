@@ -1,6 +1,6 @@
 {
   "name": "mailmoss",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "description": "See which senders you never read, and unsubscribe in one click. Nothing leaves your browser.",

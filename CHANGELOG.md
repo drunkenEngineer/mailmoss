@@ -3,10 +3,10 @@
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.0] — 2026-08-17
 
-Everything below is pre-release: the extension works end to end but has not been through Google's
-OAuth verification, so it is installed from source.
+First tagged build. The extension works end to end but has not been through Google's OAuth
+verification, so it is installed from source rather than the Web Store.
 
 ### Added
 

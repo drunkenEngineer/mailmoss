@@ -1,5 +1,8 @@
 import { defineManifest } from '@crxjs/vite-plugin'
 import { DEFAULT_SCOPES } from './src/auth/scopes.ts'
+// Read rather than repeated: keeping the version in two places is how the
+// manifest ended up claiming 0.0.1 while the package said otherwise.
+import pkg from './package.json' with { type: 'json' }
 
 const ICONS = {
   16: 'icons/icon-16.png',
@@ -17,7 +20,7 @@ export function buildManifest(env: Record<string, string>) {
   return defineManifest({
     manifest_version: 3,
     name: '__MSG_extName__',
-    version: '0.0.1',
+    version: pkg.version,
     description: '__MSG_extDescription__',
     default_locale: 'en',
 
