@@ -87,6 +87,29 @@ export function aggregate(
   return into
 }
 
+/**
+ * Rescanning rebuilds every row from messages, which knows nothing about what
+ * the user already did. Without carrying the statuses over, a sender you
+ * unsubscribed from last week reappears as untouched the next time you scan.
+ */
+export function carryStatuses(
+  rows: Map<string, SenderAggregate>,
+  previous: ReadonlyMap<string, SenderStatus>,
+): Map<string, SenderAggregate> {
+  for (const [key, status] of previous) {
+    const row = rows.get(key)
+    // Only fills gaps: a status set during this run always wins.
+    if (row && row.status === 'pending') row.status = status
+  }
+  return rows
+}
+
+export function handledStatuses(senders: readonly SenderAggregate[]): Map<string, SenderStatus> {
+  return new Map(
+    senders.filter((sender) => sender.status !== 'pending').map((s) => [s.key, s.status]),
+  )
+}
+
 export function unreadRate(sender: SenderAggregate): number {
   return sender.totalCount === 0 ? 0 : sender.unreadCount / sender.totalCount
 }

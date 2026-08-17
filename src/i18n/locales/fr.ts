@@ -106,6 +106,7 @@ export const fr: Messages = {
   reportClose: 'Fermer',
 
   statusDone: 'Désabonné',
+  statusIgnored: 'Ignoré',
   statusManual: 'À confirmer',
   statusFailed: 'Échec',
 

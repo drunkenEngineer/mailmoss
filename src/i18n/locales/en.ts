@@ -102,6 +102,7 @@ export const en = {
   reportClose: 'Close',
 
   statusDone: 'Unsubscribed',
+  statusIgnored: 'Ignored',
   statusManual: 'Needs your confirmation',
   statusFailed: 'Failed',
 

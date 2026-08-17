@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import { aggregate } from '@/core/aggregate/senders'
+import { aggregate, carryStatuses, handledStatuses } from '@/core/aggregate/senders'
 import type { SenderAggregate, SenderStatus } from '@/core/aggregate/senders'
 import { createGmailFetch } from '@/core/gmail/client'
 import { GmailError } from '@/core/gmail/errors'
@@ -87,6 +87,8 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
       setCapped(false)
 
       const rows = new Map(options.resume ? senders.map((sender) => [sender.key, sender]) : [])
+      // Survives a full rescan, which otherwise rebuilds every row as untouched.
+      const alreadyHandled = handledStatuses(senders)
       let live: ScanCheckpoint | undefined = options.resume ? checkpoint : undefined
       if (!options.resume) {
         setSenders([])
@@ -110,7 +112,7 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
           live,
         )) {
           if (event.type === 'batch') {
-            aggregate(event.messages, rows)
+            carryStatuses(aggregate(event.messages, rows), alreadyHandled)
             live = event.checkpoint
             examined = event.checkpoint.processed
             batches += 1

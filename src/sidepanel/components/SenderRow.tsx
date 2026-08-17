@@ -1,7 +1,14 @@
 import { isEngaged, unreadRate } from '@/core/aggregate/senders'
-import type { SenderAggregate } from '@/core/aggregate/senders'
+import type { SenderAggregate, SenderStatus } from '@/core/aggregate/senders'
 import { useT } from '@/i18n'
+import type { MessageKey } from '@/i18n'
 import { MethodBadge } from './MethodBadge'
+
+const HANDLED: Record<Exclude<SenderStatus, 'pending'>, { key: MessageKey; className: string }> = {
+  unsubscribed: { key: 'statusDone', className: 'bg-ok-soft text-ok' },
+  ignored: { key: 'statusIgnored', className: 'bg-sunken text-muted' },
+  failed: { key: 'statusFailed', className: 'bg-danger-soft text-danger' },
+}
 
 export function SenderRow({
   sender,
@@ -14,6 +21,7 @@ export function SenderRow({
 }) {
   const t = useT()
   const percent = Math.round(unreadRate(sender) * 100)
+  const handled = sender.status === 'pending' ? null : HANDLED[sender.status]
 
   return (
     <label
@@ -54,6 +62,11 @@ export function SenderRow({
             {t('rowUnread', { percent })}
           </span>
           <MethodBadge method={sender.unsubscribe.method} />
+          {handled && (
+            <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${handled.className}`}>
+              {t(handled.key)}
+            </span>
+          )}
         </span>
 
         {isEngaged(sender) && (

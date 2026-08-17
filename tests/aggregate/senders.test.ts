@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { aggregate, isEngaged, sortByIgnored, unreadRate } from '@/core/aggregate/senders'
+import {
+  aggregate,
+  carryStatuses,
+  handledStatuses,
+  isEngaged,
+  sortByIgnored,
+  unreadRate,
+} from '@/core/aggregate/senders'
 import type { GmailMessageMetadata } from '@/core/gmail/types'
 
 let counter = 0
@@ -86,6 +93,45 @@ describe('aggregate', () => {
     const merged = aggregate([message({ from: 'a@x.fr' })], first)
 
     expect(merged.get('a@x.fr')?.totalCount).toBe(2)
+  })
+})
+
+describe('carryStatuses', () => {
+  it('restores what the user already did to senders a rescan rebuilt', () => {
+    const rows = aggregate([message({ from: 'a@x.fr' }), message({ from: 'b@x.fr' })])
+
+    carryStatuses(rows, new Map([['a@x.fr', 'unsubscribed']]))
+
+    expect(rows.get('a@x.fr')?.status).toBe('unsubscribed')
+    expect(rows.get('b@x.fr')?.status).toBe('pending')
+  })
+
+  it('never overwrites a status set during the current run', () => {
+    const rows = aggregate([message({ from: 'a@x.fr' })])
+    const row = rows.get('a@x.fr')
+    if (row) row.status = 'ignored'
+
+    carryStatuses(rows, new Map([['a@x.fr', 'unsubscribed']]))
+
+    expect(rows.get('a@x.fr')?.status).toBe('ignored')
+  })
+
+  it('ignores senders that are no longer present', () => {
+    const rows = aggregate([message({ from: 'a@x.fr' })])
+    expect(() => carryStatuses(rows, new Map([['gone@x.fr', 'unsubscribed']]))).not.toThrow()
+    expect(rows.size).toBe(1)
+  })
+})
+
+describe('handledStatuses', () => {
+  it('collects only the senders that were acted on', () => {
+    const rows = [...aggregate([message({ from: 'a@x.fr' }), message({ from: 'b@x.fr' })]).values()]
+    const first = rows[0]
+    if (first) first.status = 'unsubscribed'
+
+    const handled = handledStatuses(rows)
+    expect([...handled.keys()]).toEqual(['a@x.fr'])
+    expect(handled.get('a@x.fr')).toBe('unsubscribed')
   })
 })
 
