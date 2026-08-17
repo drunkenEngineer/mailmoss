@@ -15,10 +15,6 @@ export const fr: Messages = {
   switchAccountNote:
     "Connecte un autre compte Gmail. L'analyse actuelle est conservée à part et n'est pas mélangée.",
 
-  signedInAs: 'Connecté en tant que {email}',
-  messagesTotal: '{count} messages dans ce compte',
-  grantedScopes: 'Accordé : {scopes}',
-
   scanStart: 'Analyser ma boîte',
   scanAgain: 'Relancer une analyse',
   scanning: 'Analyse en cours',
@@ -35,7 +31,6 @@ export const fr: Messages = {
     "Cette analyse est antérieure au suivi des nouveautés : il n'y avait rien à comparer. Le suivi démarre maintenant — revenez plus tard pour voir ce qui arrive.",
   refreshTooOld:
     "Trop de temps a passé depuis la dernière analyse pour une simple vérification. Gmail ne conserve qu'environ une semaine d'historique : relancez une analyse complète pour rattraper.",
-  scanRestored: 'Analyse précédente récupérée.',
   scanCancelled: "Annulé. Reprendre repart d'où l'analyse s'est arrêtée.",
   scanFinished: '{processed} messages analysés, {senders} expéditeurs trouvés.',
   scanCapped: 'Arrêté à la limite de sécurité de {processed} messages.',
@@ -76,7 +71,6 @@ export const fr: Messages = {
   selectionUnsubscribe: 'Se désabonner',
   selectionIgnore: 'Ignorer',
   selectionLarge: 'Cela fait {count} expéditeurs d’un coup. Vérifiez la liste avant de continuer.',
-  unsubscribeNotReady: 'Le désabonnement arrive à la prochaine étape.',
 
   settings: 'Réglages',
   settingsScope: 'Accès accordé : {scopes}',
@@ -125,5 +119,4 @@ export const fr: Messages = {
   errorNetwork: 'Gmail est injoignable. Vérifiez votre connexion.',
   errorRate: 'Gmail limite le débit. Patienter un instant suffit généralement.',
   retry: 'Réessayer',
-  back: 'Retour',
 }

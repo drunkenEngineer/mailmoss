@@ -24,6 +24,7 @@ export function ScanStatus({
   rate,
   label,
   outOfOrder,
+  capped,
   notice,
   canResume,
   canRefresh,
@@ -39,6 +40,7 @@ export function ScanStatus({
   rate: number
   label: string
   outOfOrder: boolean
+  capped: boolean
   notice: RefreshNotice | null
   canResume: boolean
   canRefresh: boolean
@@ -71,7 +73,8 @@ export function ScanStatus({
             className={`text-xs leading-relaxed ${phase === 'error' ? 'text-danger' : 'text-muted'}`}
           >
             {refreshing && t('scanRefreshing')}
-            {phase === 'done' && t('scanFinished', { processed, senders })}
+            {phase === 'done' &&
+              (capped ? t('scanCapped', { processed }) : t('scanFinished', { processed, senders }))}
             {phase === 'cancelled' && t('scanCancelled')}
             {phase === 'error' && failure && t(FAILURE_MESSAGES[failure])}
           </p>

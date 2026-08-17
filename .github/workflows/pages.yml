@@ -5,7 +5,8 @@ name: Pages
 on:
   push:
     branches: [main]
-    paths: ['PRIVACY.md', '.github/workflows/pages.yml']
+    paths:
+      ['PRIVACY.md', 'assets/logo.svg', 'scripts/build-site.mjs', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -26,25 +27,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build the site
-        run: |
-          mkdir -p site
-          cp PRIVACY.md site/index.md
-          cat > site/_config.yml <<'YAML'
-          title: Mailmoss
-          description: Privacy policy
-          theme: jekyll-theme-minimal
-          YAML
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # deploy-pages publishes the artifact verbatim, so the HTML is built here
+      # rather than relying on Jekyll to render markdown after upload.
+      - run: npm run build:site
 
       - uses: actions/configure-pages@v5
-
-      # deploy-pages publishes the artifact verbatim, so the markdown has to be
-      # turned into HTML here. Without this the site serves index.md and 404s.
-      - uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./site
-          destination: ./_site
-
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./_site

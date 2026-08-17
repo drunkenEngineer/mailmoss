@@ -13,10 +13,6 @@ export const en = {
   switchAccountNote:
     'Connects a different Gmail account. The current scan is kept separately and is not mixed in.',
 
-  signedInAs: 'Signed in as {email}',
-  messagesTotal: '{count} messages in this account',
-  grantedScopes: 'Granted: {scopes}',
-
   scanStart: 'Scan my inbox',
   scanAgain: 'Scan again',
   scanning: 'Scanning',
@@ -33,7 +29,6 @@ export const en = {
     'This scan predates change tracking, so there was nothing to compare against. Tracking starts from now — check again later to see what arrives.',
   refreshTooOld:
     'Too long since the last scan for a quick check. Gmail only keeps about a week of history, so run a full scan to catch up.',
-  scanRestored: 'Picked up a saved scan from before.',
   scanCancelled: 'Cancelled. Resume continues where it stopped.',
   scanFinished: 'Scanned {processed} messages and found {senders} senders.',
   scanCapped: 'Stopped at the safety limit of {processed} messages.',
@@ -73,7 +68,6 @@ export const en = {
   selectionUnsubscribe: 'Unsubscribe',
   selectionIgnore: 'Ignore',
   selectionLarge: "That's {count} senders at once. Check the list before going ahead.",
-  unsubscribeNotReady: 'Unsubscribing arrives in the next step.',
 
   settings: 'Settings',
   settingsScope: 'Access granted: {scopes}',
@@ -121,7 +115,6 @@ export const en = {
   errorNetwork: 'Could not reach Gmail. Check your connection.',
   errorRate: 'Gmail is rate limiting. Waiting a moment usually clears it.',
   retry: 'Try again',
-  back: 'Back',
 } as const
 
 export type MessageKey = keyof typeof en

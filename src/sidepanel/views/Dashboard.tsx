@@ -110,6 +110,7 @@ export function Dashboard({
         rate={scan.rate}
         label={scan.label}
         outOfOrder={scan.outOfOrder}
+        capped={scan.capped}
         notice={scan.notice}
         canResume={scan.canResume}
         canRefresh={scan.canRefresh}
@@ -160,6 +161,12 @@ export function Dashboard({
 
           <SelectionBar
             count={selected.size}
+            selectableCount={visible.length}
+            onSelectAll={() => {
+              // "All" means what the filter currently shows, never the whole
+              // list, so a narrowed view cannot select rows off screen.
+              setSelected(new Set(visible.map((sender) => sender.key)))
+            }}
             onClear={() => {
               setSelected(new Set())
             }}

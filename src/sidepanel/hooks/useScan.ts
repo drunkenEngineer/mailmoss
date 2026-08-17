@@ -45,6 +45,7 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
   const [label, setLabel] = useState('')
   const [rate, setRate] = useState(0)
   const [outOfOrder, setOutOfOrder] = useState(false)
+  const [capped, setCapped] = useState(false)
   const [historyId, setHistoryId] = useState(restored?.lastHistoryId ?? '')
   const [notice, setNotice] = useState<RefreshNotice | null>(null)
 
@@ -83,6 +84,7 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
       setPhase('scanning')
       setFailure(null)
       setOutOfOrder(false)
+      setCapped(false)
 
       const rows = new Map(options.resume ? senders.map((sender) => [sender.key, sender]) : [])
       let live: ScanCheckpoint | undefined = options.resume ? checkpoint : undefined
@@ -127,6 +129,9 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
             examined = event.processed
             setCheckpoint(undefined)
             setProcessed(examined)
+            // A scan that stopped at the safety limit has not seen everything,
+            // and must not report the same thing as one that finished.
+            setCapped(event.reason === 'cap-reached')
             setPhase('done')
 
             // Read after the scan, not before. Taking it first would make the
@@ -270,6 +275,7 @@ export function useScan(token: string, store: ReturnType<typeof useScanStore>) {
     label,
     rate,
     outOfOrder,
+    capped,
     notice,
     canResume: checkpoint !== undefined,
     canRefresh: phase === 'done' && checkpoint === undefined,

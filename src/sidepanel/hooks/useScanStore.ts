@@ -16,7 +16,6 @@ export function useScanStore(email: string) {
 
   const [accountHash, setAccountHash] = useState('')
   const [restored, setRestored] = useState<PersistedScan | null>(null)
-  const [note, setNote] = useState('')
   const [usage, setUsage] = useState<QuotaStatus>(quotaStatus(0))
   const [ready, setReady] = useState(false)
 
@@ -31,19 +30,16 @@ export function useScanStore(email: string) {
       const outcome: LoadOutcome = await store.load(hash)
       if (!active) return
 
-      if (outcome.status === 'loaded') {
-        setRestored(outcome.document)
-        setNote(`Restored ${String(outcome.document.senders.length)} senders from a saved scan.`)
-      } else if (outcome.status === 'discarded') {
-        setNote(`Saved scan discarded: ${outcome.reason}.`)
-      }
+      // A discarded document is not worth reporting: it belonged to another
+      // account or another build, and the panel simply starts fresh.
+      if (outcome.status === 'loaded') setRestored(outcome.document)
 
       setUsage(await store.usage())
       setReady(true)
     }
 
     restore().catch((error: unknown) => {
-      setNote(error instanceof Error ? error.message : 'Could not read stored data')
+      console.error('Could not read stored data', error)
       setReady(true)
     })
 
@@ -64,9 +60,8 @@ export function useScanStore(email: string) {
     if (accountHash === '') return
     await store.clearScan(accountHash)
     setRestored(null)
-    setNote('Cleared.')
     setUsage(await store.usage())
   }, [accountHash, store])
 
-  return { ready, accountHash, restored, note, usage, save, clear }
+  return { ready, accountHash, restored, usage, save, clear }
 }
