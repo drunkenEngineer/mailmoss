@@ -37,9 +37,17 @@ jobs:
           YAML
 
       - uses: actions/configure-pages@v5
+
+      # deploy-pages publishes the artifact verbatim, so the markdown has to be
+      # turned into HTML here. Without this the site serves index.md and 404s.
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./site
+          destination: ./_site
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: ./_site
 
       - id: deploy
         uses: actions/deploy-pages@v4
